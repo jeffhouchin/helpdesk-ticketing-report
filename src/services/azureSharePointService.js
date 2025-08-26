@@ -233,14 +233,8 @@ class AzureSharePointService {
       };
 
     } catch (error) {
-      console.error(`❌ Today's file (${expectedFileName}) not found or empty:`, error.message);
-      // Return empty data to show there's an issue with today's file
-      return {
-        filename: expectedFileName,
-        content: '', // Empty content will result in 0 tickets
-        lastModified: new Date().toISOString(),
-        error: `Today's file ${expectedFileName} not found or inaccessible`
-      };
+      console.warn(`⚠️ Today's file not found, using latest available`);
+      return await this.getLatestTicketCSV();
     }
   }
 

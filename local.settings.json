@@ -1,0 +1,21 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "CLAUDE_API_KEY": "YOUR_ACTUAL_KEY_GOES_HERE",
+    "SHAREPOINT_SITE_ID": "PLACEHOLDER_WILL_USE_AZURE_VALUE",
+    "SHAREPOINT_DRIVE_ID": "PLACEHOLDER_WILL_USE_AZURE_VALUE",
+    "CSV_FOLDER_PATH": "/Shared Documents/Helpdesk",
+    "SUPERVISOR_EMAIL": "jhouchin@banyancenters.com",
+    "TENANT_ID": "4a097b4c-08a1-4725-865f-3fc83b2366e8",
+    "MICROSOFT_CLIENT_ID": "your_app_registration_client_id",
+    "MICROSOFT_CLIENT_SECRET": "your_app_registration_secret",
+    "USE_GRAPH_EMAIL": "true",
+    "TECH_EMAILS": "rmoll@banyancenters.com,rvoyer@banyancenters.com,dmui@banyancenters.com"
+  },
+  "Host": {
+    "LocalHttpPort": 7071,
+    "CORS": "*"
+  }
+}

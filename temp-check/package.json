@@ -1,0 +1,31 @@
+{
+  "name": "helpdesk-ticketing-report",
+  "version": "1.0.0",
+  "description": "AI-powered helpdesk ticket analysis and notification system",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "func start",
+    "dev": "func start --javascript",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.0.0",
+    "@azure/identity": "^4.0.1",
+    "@azure/msal-node": "^2.13.0",
+    "@microsoft/microsoft-graph-client": "^3.0.7",
+    "axios": "^1.7.7",
+    "csv-parse": "^6.1.0",
+    "date-fns": "^3.6.0",
+    "dotenv": "^16.4.5",
+    "nodemailer": "^7.0.5",
+    "xlsx": "^0.18.5"
+  },
+  "keywords": [
+    "helpdesk",
+    "tickets",
+    "automation",
+    "ai"
+  ],
+  "author": "Jeff Houchin",
+  "license": "MIT"
+}

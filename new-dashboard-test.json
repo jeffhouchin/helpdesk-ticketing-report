@@ -1,0 +1,859 @@
+{
+  "type": "actionable_supervisor_dashboard",
+  "generated": "2025-08-26T04:43:33.462Z",
+  "summary": {
+    "totalOpen": 178,
+    "slaViolations": 15,
+    "noTechResponse3Days": 25,
+    "criticalAging": 55,
+    "immediateTriage": 0,
+    "vipAlerts": 10,
+    "quickWins": 5,
+    "closureCandidates": 3
+  },
+  "sections": {
+    "sla_violations": [
+      {
+        "ticketId": "19128",
+        "type": "ASSIGNMENT",
+        "severity": "CRITICAL",
+        "message": "Unassigned for 30929.3 hours (SLA: 1 hours)",
+        "hoursOverdue": 30928.290277777778,
+        "action": "ASSIGN_IMMEDIATELY",
+        "url": "https://your-ticket-system.com/ticket/19128"
+      },
+      {
+        "ticketId": "19128",
+        "type": "FIRST_RESPONSE",
+        "severity": "CRITICAL",
+        "message": "First response in 30901.6 hours (SLA: 3 hours)",
+        "hoursOverdue": 30898.57361111111,
+        "action": "RESPOND_NOW",
+        "url": "https://your-ticket-system.com/ticket/19128"
+      },
+      {
+        "ticketId": "117772",
+        "type": "ASSIGNMENT",
+        "severity": "CRITICAL",
+        "message": "Unassigned for 2859.3 hours (SLA: 1 hours)",
+        "hoursOverdue": 2858.3444444444444,
+        "action": "ASSIGN_IMMEDIATELY",
+        "url": "https://your-ticket-system.com/ticket/117772"
+      },
+      {
+        "ticketId": "117772",
+        "type": "FIRST_RESPONSE",
+        "severity": "CRITICAL",
+        "message": "First response in 2721.9 hours (SLA: 3 hours)",
+        "hoursOverdue": 2718.8611111111113,
+        "action": "RESPOND_NOW",
+        "url": "https://your-ticket-system.com/ticket/117772"
+      },
+      {
+        "ticketId": "122735",
+        "type": "ASSIGNMENT",
+        "severity": "CRITICAL",
+        "message": "Unassigned for 1937.6 hours (SLA: 1 hours)",
+        "hoursOverdue": 1936.5594444444446,
+        "action": "ASSIGN_IMMEDIATELY",
+        "url": "https://your-ticket-system.com/ticket/122735"
+      },
+      {
+        "ticketId": "123693",
+        "type": "ASSIGNMENT",
+        "severity": "CRITICAL",
+        "message": "Unassigned for 1766.0 hours (SLA: 1 hours)",
+        "hoursOverdue": 1764.9925,
+        "action": "ASSIGN_IMMEDIATELY",
+        "url": "https://your-ticket-system.com/ticket/123693"
+      },
+      {
+        "ticketId": "124134",
+        "type": "ASSIGNMENT",
+        "severity": "CRITICAL",
+        "message": "Unassigned for 1702.0 hours (SLA: 1 hours)",
+        "hoursOverdue": 1701.0483333333334,
+        "action": "ASSIGN_IMMEDIATELY",
+        "url": "https://your-ticket-system.com/ticket/124134"
+      },
+      {
+        "ticketId": "125035",
+        "type": "ASSIGNMENT",
+        "severity": "CRITICAL",
+        "message": "Unassigned for 1572.7 hours (SLA: 1 hours)",
+        "hoursOverdue": 1571.6691666666666,
+        "action": "ASSIGN_IMMEDIATELY",
+        "url": "https://your-ticket-system.com/ticket/125035"
+      },
+      {
+        "ticketId": "122735",
+        "type": "FIRST_RESPONSE",
+        "severity": "CRITICAL",
+        "message": "First response in 1560.0 hours (SLA: 3 hours)",
+        "hoursOverdue": 1557.0261111111113,
+        "action": "RESPOND_NOW",
+        "url": "https://your-ticket-system.com/ticket/122735"
+      },
+      {
+        "ticketId": "125035",
+        "type": "FIRST_RESPONSE",
+        "severity": "CRITICAL",
+        "message": "First response in 1539.2 hours (SLA: 3 hours)",
+        "hoursOverdue": 1536.2191666666665,
+        "action": "RESPOND_NOW",
+        "url": "https://your-ticket-system.com/ticket/125035"
+      },
+      {
+        "ticketId": "125895",
+        "type": "ASSIGNMENT",
+        "severity": "CRITICAL",
+        "message": "Unassigned for 1402.5 hours (SLA: 1 hours)",
+        "hoursOverdue": 1401.5211111111112,
+        "action": "ASSIGN_IMMEDIATELY",
+        "url": "https://your-ticket-system.com/ticket/125895"
+      },
+      {
+        "ticketId": "123693",
+        "type": "FIRST_RESPONSE",
+        "severity": "CRITICAL",
+        "message": "First response in 1388.5 hours (SLA: 3 hours)",
+        "hoursOverdue": 1385.4925,
+        "action": "RESPOND_NOW",
+        "url": "https://your-ticket-system.com/ticket/123693"
+      },
+      {
+        "ticketId": "126897",
+        "type": "ASSIGNMENT",
+        "severity": "CRITICAL",
+        "message": "Unassigned for 1248.6 hours (SLA: 1 hours)",
+        "hoursOverdue": 1247.6458333333333,
+        "action": "ASSIGN_IMMEDIATELY",
+        "url": "https://your-ticket-system.com/ticket/126897"
+      },
+      {
+        "ticketId": "125895",
+        "type": "FIRST_RESPONSE",
+        "severity": "CRITICAL",
+        "message": "First response in 1216.7 hours (SLA: 3 hours)",
+        "hoursOverdue": 1213.687777777778,
+        "action": "RESPOND_NOW",
+        "url": "https://your-ticket-system.com/ticket/125895"
+      },
+      {
+        "ticketId": "127136",
+        "type": "ASSIGNMENT",
+        "severity": "CRITICAL",
+        "message": "Unassigned for 1206.5 hours (SLA: 1 hours)",
+        "hoursOverdue": 1205.5,
+        "action": "ASSIGN_IMMEDIATELY",
+        "url": "https://your-ticket-system.com/ticket/127136"
+      }
+    ],
+    "no_tech_response_3days": [
+      {
+        "ticketId": "19128",
+        "daysSinceCreated": 3409,
+        "daysSinceLastTechResponse": 24,
+        "assigned": "bhopbdhruv.sharma",
+        "subject": "[Security] Check DC1 NETLOGON Logs for Access Attempts",
+        "priority": "CRITICAL",
+        "urgencyLevel": 68180,
+        "url": "https://your-ticket-system.com/ticket/19128"
+      },
+      {
+        "ticketId": "117772",
+        "daysSinceCreated": 315,
+        "daysSinceLastTechResponse": 15,
+        "assigned": "bhopbcbowra",
+        "subject": "Speakers for CADS front lobby",
+        "priority": "NORMAL",
+        "urgencyLevel": 3150,
+        "url": "https://your-ticket-system.com/ticket/117772"
+      },
+      {
+        "ticketId": "128498",
+        "daysSinceCreated": 108,
+        "daysSinceLastTechResponse": 3,
+        "assigned": "bhopbbrittany.obrien",
+        "subject": "Term System Access",
+        "priority": "CRITICAL",
+        "urgencyLevel": 2160,
+        "url": "https://your-ticket-system.com/ticket/128498"
+      },
+      {
+        "ticketId": "122735",
+        "daysSinceCreated": 213,
+        "daysSinceLastTechResponse": 41,
+        "assigned": "BHOPBdmui",
+        "subject": "Banyan Boca - iPad Issues/Requests",
+        "priority": "NORMAL",
+        "urgencyLevel": 2130,
+        "url": "https://your-ticket-system.com/ticket/122735"
+      },
+      {
+        "ticketId": "123693",
+        "daysSinceCreated": 194,
+        "daysSinceLastTechResponse": 194,
+        "assigned": "BHOPBdmui",
+        "subject": "2FA Marketing Department",
+        "priority": "NORMAL",
+        "urgencyLevel": 1940,
+        "url": "https://your-ticket-system.com/ticket/123693"
+      },
+      {
+        "ticketId": "124134",
+        "daysSinceCreated": 187,
+        "daysSinceLastTechResponse": 105,
+        "assigned": "BHOPBjscheringer",
+        "subject": "Fw: IM C4510 user/pin code",
+        "priority": "NORMAL",
+        "urgencyLevel": 1870,
+        "url": "https://your-ticket-system.com/ticket/124134"
+      },
+      {
+        "ticketId": "125035",
+        "daysSinceCreated": 173,
+        "daysSinceLastTechResponse": 3,
+        "assigned": "BHOPBjscheringer",
+        "subject": "Remove Seaside from Work Ticket system - retain data",
+        "priority": "NORMAL",
+        "urgencyLevel": 1730,
+        "url": "https://your-ticket-system.com/ticket/125035"
+      },
+      {
+        "ticketId": "125895",
+        "daysSinceCreated": 154,
+        "daysSinceLastTechResponse": 20,
+        "assigned": "BHOPBdmui",
+        "subject": "Return of Banyan iPhone",
+        "priority": "NORMAL",
+        "urgencyLevel": 1540,
+        "url": "https://your-ticket-system.com/ticket/125895"
+      },
+      {
+        "ticketId": "126897",
+        "daysSinceCreated": 137,
+        "daysSinceLastTechResponse": 41,
+        "assigned": "BHOPBdmui",
+        "subject": "Sebring Tablet Request",
+        "priority": "NORMAL",
+        "urgencyLevel": 1370,
+        "url": "https://your-ticket-system.com/ticket/126897"
+      },
+      {
+        "ticketId": "127136",
+        "daysSinceCreated": 132,
+        "daysSinceLastTechResponse": 25,
+        "assigned": "bhopbbrittany.obrien",
+        "subject": "! ACTION REQUIRED ! REVIEW THESE AD ACCOUNTS",
+        "priority": "NORMAL",
+        "urgencyLevel": 1320,
+        "url": "https://your-ticket-system.com/ticket/127136"
+      },
+      {
+        "ticketId": "127687",
+        "daysSinceCreated": 123,
+        "daysSinceLastTechResponse": 63,
+        "assigned": "BHOPBjscheringer",
+        "subject": "Cameras installed March/24",
+        "priority": "NORMAL",
+        "urgencyLevel": 1230,
+        "url": "https://your-ticket-system.com/ticket/127687"
+      },
+      {
+        "ticketId": "127907",
+        "daysSinceCreated": 118,
+        "daysSinceLastTechResponse": 84,
+        "assigned": "BHOPBjscheringer",
+        "subject": "Fw: No Signal",
+        "priority": "NORMAL",
+        "urgencyLevel": 1180,
+        "url": "https://your-ticket-system.com/ticket/127907"
+      },
+      {
+        "ticketId": "127958",
+        "daysSinceCreated": 117,
+        "daysSinceLastTechResponse": 105,
+        "assigned": "BHOPBjscheringer",
+        "subject": "printer name change",
+        "priority": "NORMAL",
+        "urgencyLevel": 1170,
+        "url": "https://your-ticket-system.com/ticket/127958"
+      },
+      {
+        "ticketId": "129409",
+        "daysSinceCreated": 95,
+        "daysSinceLastTechResponse": 28,
+        "assigned": "BHOPBjscheringer",
+        "subject": "Fw: NOT DELIVERED:  Test Fax",
+        "priority": "NORMAL",
+        "urgencyLevel": 950,
+        "url": "https://your-ticket-system.com/ticket/129409"
+      },
+      {
+        "ticketId": "129546",
+        "daysSinceCreated": 91,
+        "daysSinceLastTechResponse": 48,
+        "assigned": "bhopbkpunch",
+        "subject": "Help ticket",
+        "priority": "NORMAL",
+        "urgencyLevel": 910,
+        "url": "https://your-ticket-system.com/ticket/129546"
+      },
+      {
+        "ticketId": "129624",
+        "daysSinceCreated": 90,
+        "daysSinceLastTechResponse": 28,
+        "assigned": "BHOPBjscheringer",
+        "subject": "printer issues",
+        "priority": "NORMAL",
+        "urgencyLevel": 900,
+        "url": "https://your-ticket-system.com/ticket/129624"
+      },
+      {
+        "ticketId": "129823",
+        "daysSinceCreated": 87,
+        "daysSinceLastTechResponse": 40,
+        "assigned": "BHOPBdmui",
+        "subject": "iPads",
+        "priority": "NORMAL",
+        "urgencyLevel": 870,
+        "url": "https://your-ticket-system.com/ticket/129823"
+      },
+      {
+        "ticketId": "129971",
+        "daysSinceCreated": 84,
+        "daysSinceLastTechResponse": 3,
+        "assigned": "bhopbbrittany.obrien",
+        "subject": "Replacement Laptop",
+        "priority": "NORMAL",
+        "urgencyLevel": 840,
+        "url": "https://your-ticket-system.com/ticket/129971"
+      },
+      {
+        "ticketId": "130118",
+        "daysSinceCreated": 82,
+        "daysSinceLastTechResponse": 49,
+        "assigned": "BHOPBdmui",
+        "subject": "Ipad",
+        "priority": "NORMAL",
+        "urgencyLevel": 820,
+        "url": "https://your-ticket-system.com/ticket/130118"
+      },
+      {
+        "ticketId": "130511",
+        "daysSinceCreated": 76,
+        "daysSinceLastTechResponse": 39,
+        "assigned": "bhopbkpunch",
+        "subject": "Lunch Swipe at Heartland",
+        "priority": "NORMAL",
+        "urgencyLevel": 760,
+        "url": "https://your-ticket-system.com/ticket/130511"
+      },
+      {
+        "ticketId": "130970",
+        "daysSinceCreated": 70,
+        "daysSinceLastTechResponse": 24,
+        "assigned": "BHOPBdmui",
+        "subject": "needing additional Iphones & ipads",
+        "priority": "NORMAL",
+        "urgencyLevel": 700,
+        "url": "https://your-ticket-system.com/ticket/130970"
+      },
+      {
+        "ticketId": "130951",
+        "daysSinceCreated": 70,
+        "daysSinceLastTechResponse": 55,
+        "assigned": "BHOPBdmui",
+        "subject": "3 hotspots",
+        "priority": "NORMAL",
+        "urgencyLevel": 700,
+        "url": "https://your-ticket-system.com/ticket/130951"
+      },
+      {
+        "ticketId": "131192",
+        "daysSinceCreated": 67,
+        "daysSinceLastTechResponse": 11,
+        "assigned": "bhopbbrittany.obrien",
+        "subject": "Sally Gay Juarez has submitted a ticket",
+        "priority": "NORMAL",
+        "urgencyLevel": 670,
+        "url": "https://your-ticket-system.com/ticket/131192"
+      },
+      {
+        "ticketId": "131386",
+        "daysSinceCreated": 63,
+        "daysSinceLastTechResponse": 46,
+        "assigned": "BHOPBjscheringer",
+        "subject": "Fw: Follow Up Email - Brandon Fisher - Frontier Business Products",
+        "priority": "NORMAL",
+        "urgencyLevel": 630,
+        "url": "https://your-ticket-system.com/ticket/131386"
+      },
+      {
+        "ticketId": "131465",
+        "daysSinceCreated": 62,
+        "daysSinceLastTechResponse": 45,
+        "assigned": "BHOPBdmui",
+        "subject": "Amy Lavin has submitted a ticket",
+        "priority": "NORMAL",
+        "urgencyLevel": 620,
+        "url": "https://your-ticket-system.com/ticket/131465"
+      }
+    ],
+    "aging_analysis": {
+      "buckets": {
+        "0-3_days": [
+          "135036",
+          "135034",
+          "135032",
+          "135030",
+          "135028",
+          "135026",
+          "135024",
+          "135023",
+          "135022",
+          "135021",
+          "135018",
+          "135016",
+          "135012",
+          "135011",
+          "135009",
+          "135007",
+          "135006",
+          "135004",
+          "134998",
+          "134990",
+          "134988",
+          "134983",
+          "134967",
+          "134960",
+          "134958",
+          "134947"
+        ],
+        "4-7_days": [
+          "134929",
+          "134916",
+          "134912",
+          "134910",
+          "134903",
+          "134902",
+          "134901",
+          "134893",
+          "134891",
+          "134886",
+          "134884",
+          "134874",
+          "134867",
+          "134866",
+          "134862",
+          "134856",
+          "134842",
+          "134841",
+          "134832",
+          "134819",
+          "134818",
+          "134816",
+          "134811",
+          "134786",
+          "134782",
+          "134773",
+          "134771",
+          "134770",
+          "134769",
+          "134762",
+          "134750",
+          "134749",
+          "134739",
+          "134734",
+          "134733",
+          "134726",
+          "134721",
+          "134715",
+          "134689",
+          "134686",
+          "134673",
+          "134669",
+          "134659",
+          "134657",
+          "134656"
+        ],
+        "8-14_days": [
+          "134644",
+          "134643",
+          "134621",
+          "134617",
+          "134604",
+          "134601",
+          "134593",
+          "134590",
+          "134588",
+          "134582",
+          "134575",
+          "134571",
+          "134567",
+          "134562",
+          "134558",
+          "134553",
+          "134538",
+          "134533",
+          "134510",
+          "134473",
+          "134469",
+          "134458",
+          "134452",
+          "134440",
+          "134434",
+          "134429",
+          "134386",
+          "134381",
+          "134336",
+          "134322",
+          "134281",
+          "134280",
+          "134254",
+          "134243",
+          "134238"
+        ],
+        "15-21_days": [
+          "134195",
+          "134189",
+          "134135",
+          "134129",
+          "134126",
+          "134124",
+          "134120",
+          "134105",
+          "134075",
+          "134071",
+          "133997",
+          "133993",
+          "133992",
+          "133924",
+          "133921",
+          "133911",
+          "133839"
+        ],
+        "22+_days": [
+          "133743",
+          "133686",
+          "133622",
+          "133586",
+          "133423",
+          "133371",
+          "133367",
+          "133332",
+          "133330",
+          "133319",
+          "133242",
+          "133171",
+          "133089",
+          "133084",
+          "133080",
+          "133029",
+          "133026",
+          "132993",
+          "132987",
+          "132930",
+          "132685",
+          "132611",
+          "132499",
+          "132487",
+          "132404",
+          "132159",
+          "131943",
+          "131940",
+          "131601",
+          "131533",
+          "131465",
+          "131386",
+          "131192",
+          "130970",
+          "130951",
+          "130511",
+          "130118",
+          "129971",
+          "129823",
+          "129624",
+          "129546",
+          "129409",
+          "128498",
+          "127958",
+          "127907",
+          "127687",
+          "127136",
+          "126897",
+          "125895",
+          "125035",
+          "124134",
+          "123693",
+          "122735",
+          "117772",
+          "19128"
+        ]
+      },
+      "summary": {
+        "total": 178,
+        "aging_concern": 17,
+        "critical_aging": 55
+      }
+    },
+    "immediate_triage": [],
+    "vip_alerts": [
+      {
+        "ticketId": "135034",
+        "submitter": "SQLalerts@banyancenters.com",
+        "subject": "! ACTION REQUIRED ! REVIEW THESE AD ACCOUNTS",
+        "age": 0,
+        "assigned": "bhopbadnan.tamboli",
+        "url": "https://your-ticket-system.com/ticket/135034"
+      },
+      {
+        "ticketId": "135030",
+        "submitter": "cheryl.pfeffer@banyancenters.com",
+        "subject": "Reuben Holliman",
+        "age": 1,
+        "assigned": "bhopblove.shah",
+        "url": "https://your-ticket-system.com/ticket/135030"
+      },
+      {
+        "ticketId": "135026",
+        "submitter": "bhopb\\bduke",
+        "subject": "Remove email from distribution lists",
+        "age": 1,
+        "assigned": "bhopbdhruv.sharma",
+        "url": "https://your-ticket-system.com/ticket/135026"
+      },
+      {
+        "ticketId": "135024",
+        "submitter": "kayla.reiter@banyancenters.com",
+        "subject": "Need to Add Additional Beds to Telehealth Building",
+        "age": 1,
+        "assigned": "BHOPBcarlos.rios",
+        "url": "https://your-ticket-system.com/ticket/135024"
+      },
+      {
+        "ticketId": "135022",
+        "submitter": "BHOPB\\tracy.lamb",
+        "subject": "Call Tracking Metrics / Access request",
+        "age": 1,
+        "assigned": "BHOPBrmoll",
+        "url": "https://your-ticket-system.com/ticket/135022"
+      },
+      {
+        "ticketId": "135018",
+        "submitter": "beth.elletson@banyancenters.com",
+        "subject": "Sherri Access- returning",
+        "age": 1,
+        "assigned": "bhopbrvoyer",
+        "url": "https://your-ticket-system.com/ticket/135018"
+      },
+      {
+        "ticketId": "135011",
+        "submitter": "BHOPB\\eric.quick",
+        "subject": "gm, BGB FTE Therapist cannot access SAFE T Tab, Progress Notes, Evaluations, No ",
+        "age": 2,
+        "assigned": "bhopbkpunch",
+        "url": "https://your-ticket-system.com/ticket/135011"
+      },
+      {
+        "ticketId": "135006",
+        "submitter": "alavin@banyancenters.com",
+        "subject": "New medical director-banyan Philadelphia",
+        "age": 2,
+        "assigned": "bhopbkpunch",
+        "url": "https://your-ticket-system.com/ticket/135006"
+      },
+      {
+        "ticketId": "135004",
+        "submitter": "drothleder@banyancenters.com",
+        "subject": "Urgent request for Toner for Stuart Locatation",
+        "age": 2,
+        "assigned": "bhopbkpunch",
+        "url": "https://your-ticket-system.com/ticket/135004"
+      },
+      {
+        "ticketId": "134998",
+        "submitter": "lsantiago@banyancenters.com",
+        "subject": "Help Ticket",
+        "age": 3,
+        "assigned": "BHOPBcarlos.rios",
+        "url": "https://your-ticket-system.com/ticket/134998"
+      }
+    ],
+    "quick_wins": [
+      {
+        "ticketId": "135032",
+        "reason": "Contains quick-win keywords",
+        "estimatedMinutes": 20,
+        "url": "https://your-ticket-system.com/ticket/135032"
+      },
+      {
+        "ticketId": "135022",
+        "reason": "Contains quick-win keywords",
+        "estimatedMinutes": 20,
+        "url": "https://your-ticket-system.com/ticket/135022"
+      },
+      {
+        "ticketId": "135021",
+        "reason": "Contains quick-win keywords",
+        "estimatedMinutes": 20,
+        "url": "https://your-ticket-system.com/ticket/135021"
+      },
+      {
+        "ticketId": "135018",
+        "reason": "Contains quick-win keywords",
+        "estimatedMinutes": 20,
+        "url": "https://your-ticket-system.com/ticket/135018"
+      },
+      {
+        "ticketId": "135016",
+        "reason": "Contains quick-win keywords",
+        "estimatedMinutes": 20,
+        "url": "https://your-ticket-system.com/ticket/135016"
+      }
+    ],
+    "closure_candidates": [
+      {
+        "ticketId": "134604",
+        "reason": "No user response for 7+ days",
+        "lastActivity": "10 days ago",
+        "assigned": "bhopbcweyer",
+        "url": "https://your-ticket-system.com/ticket/134604"
+      },
+      {
+        "ticketId": "134510",
+        "reason": "No user response for 7+ days",
+        "lastActivity": "11 days ago",
+        "assigned": "BHOPBdmui",
+        "url": "https://your-ticket-system.com/ticket/134510"
+      },
+      {
+        "ticketId": "128498",
+        "reason": "No user response for 7+ days",
+        "lastActivity": "108 days ago",
+        "assigned": "bhopbbrittany.obrien",
+        "url": "https://your-ticket-system.com/ticket/128498"
+      }
+    ],
+    "tech_performance": {
+      "bhopbadnan.tamboli": {
+        "totalTickets": 8,
+        "oldTickets": 2,
+        "avgAge": 11,
+        "noResponseCount": 6,
+        "oldTicketPercent": 25
+      },
+      "bhopbdhruv.sharma": {
+        "totalTickets": 5,
+        "oldTickets": 1,
+        "avgAge": 686,
+        "noResponseCount": 3,
+        "oldTicketPercent": 20
+      },
+      "bhopblove.shah": {
+        "totalTickets": 4,
+        "oldTickets": 1,
+        "avgAge": 9,
+        "noResponseCount": 1,
+        "oldTicketPercent": 25
+      },
+      "BHOPBcarlos.rios": {
+        "totalTickets": 11,
+        "oldTickets": 3,
+        "avgAge": 10,
+        "noResponseCount": 7,
+        "oldTicketPercent": 27
+      },
+      "BHOPBrmoll": {
+        "totalTickets": 14,
+        "oldTickets": 2,
+        "avgAge": 10,
+        "noResponseCount": 7,
+        "oldTicketPercent": 14
+      },
+      "bhopbrvoyer": {
+        "totalTickets": 4,
+        "oldTickets": 1,
+        "avgAge": 9,
+        "noResponseCount": 3,
+        "oldTicketPercent": 25
+      },
+      "bhopbkpunch": {
+        "totalTickets": 17,
+        "oldTickets": 10,
+        "avgAge": 32,
+        "noResponseCount": 13,
+        "oldTicketPercent": 59
+      },
+      "BHOPBjean.pierre": {
+        "totalTickets": 10,
+        "oldTickets": 2,
+        "avgAge": 10,
+        "noResponseCount": 9,
+        "oldTicketPercent": 20
+      },
+      "BHOPBdmui": {
+        "totalTickets": 32,
+        "oldTickets": 20,
+        "avgAge": 47,
+        "noResponseCount": 31,
+        "oldTicketPercent": 63
+      },
+      "BHOPBcgillett": {
+        "totalTickets": 10,
+        "oldTickets": 1,
+        "avgAge": 9,
+        "noResponseCount": 10,
+        "oldTicketPercent": 10
+      },
+      "BHOPBjscheringer": {
+        "totalTickets": 21,
+        "oldTickets": 16,
+        "avgAge": 60,
+        "noResponseCount": 21,
+        "oldTicketPercent": 76
+      },
+      "bhopbbrittany.obrien": {
+        "totalTickets": 18,
+        "oldTickets": 8,
+        "avgAge": 30,
+        "noResponseCount": 18,
+        "oldTicketPercent": 44
+      },
+      "bhopbcbowra": {
+        "totalTickets": 16,
+        "oldTickets": 3,
+        "avgAge": 31,
+        "noResponseCount": 16,
+        "oldTicketPercent": 19
+      },
+      "BHOPBishwar.gujjarwar": {
+        "totalTickets": 2,
+        "oldTickets": 0,
+        "avgAge": 6,
+        "noResponseCount": 2,
+        "oldTicketPercent": 0
+      },
+      "bhopbcweyer": {
+        "totalTickets": 3,
+        "oldTickets": 0,
+        "avgAge": 10,
+        "noResponseCount": 3,
+        "oldTicketPercent": 0
+      },
+      "BHOPBjhouchin": {
+        "totalTickets": 2,
+        "oldTickets": 2,
+        "avgAge": 23,
+        "noResponseCount": 2,
+        "oldTicketPercent": 100
+      }
+    }
+  },
+  "ticketCounts": {
+    "unassigned": 1,
+    "noResponse": 155,
+    "stuck": 77
+  }
+}

@@ -46,7 +46,7 @@ class SupervisorDashboardService {
           message: slaAnalysis.assignment.message,
           hoursOverdue: slaAnalysis.assignment.hoursOverdue,
           action: 'ASSIGN_IMMEDIATELY',
-          url: `http://helpdesk/${ticket.IssueID}`
+          url: `http://helpdesk/Ticket/${ticket.IssueID}`
         });
       }
       
@@ -59,7 +59,7 @@ class SupervisorDashboardService {
           message: slaAnalysis.firstResponse.message,
           hoursOverdue: slaAnalysis.firstResponse.hoursOverdue,
           action: 'RESPOND_NOW',
-          url: `http://helpdesk/${ticket.IssueID}`
+          url: `http://helpdesk/Ticket/${ticket.IssueID}`
         });
       }
     });
@@ -83,7 +83,7 @@ class SupervisorDashboardService {
         subject: (alert.ticket.Subject || '').substring(0, 70),
         priority: this.getPriorityLevel(alert.ticket.Priority),
         urgencyLevel: alert.urgencyLevel,
-        url: `http://helpdesk/${alert.ticket.IssueID}`
+        url: `http://helpdesk/Ticket/${alert.ticket.IssueID}`
       });
     });
     
@@ -136,7 +136,7 @@ class SupervisorDashboardService {
           reason: 'New unassigned ticket',
           age: `${createdHoursAgo.toFixed(1)} hours`,
           subject: (ticket.Subject || '').substring(0, 60),
-          url: `http://helpdesk/${ticket.IssueID}`
+          url: `http://helpdesk/Ticket/${ticket.IssueID}`
         });
       }
     });
@@ -166,7 +166,7 @@ class SupervisorDashboardService {
           subject: (ticket.Subject || '').substring(0, 80),
           age: this.calculateAge(ticket.IssueDate),
           assigned: ticket.Tech_Assigned_Clean || 'UNASSIGNED',
-          url: `http://helpdesk/${ticket.IssueID}`
+          url: `http://helpdesk/Ticket/${ticket.IssueID}`
         });
       }
     });
@@ -223,7 +223,7 @@ class SupervisorDashboardService {
           reason: 'No user response for 7+ days',
           lastActivity: `${lastResponseDays} days ago`,
           assigned: ticket.Tech_Assigned_Clean,
-          url: `http://helpdesk/${ticket.IssueID}`
+          url: `http://helpdesk/Ticket/${ticket.IssueID}`
         });
       }
     });
@@ -536,7 +536,7 @@ Return JSON array of quick win ticket IDs with reasons:
       ticketId: ticket.IssueID,
       reason: 'Contains quick-win keywords',
       estimatedMinutes: 20,
-      url: `http://helpdesk/${ticket.IssueID}`
+      url: `http://helpdesk/Ticket/${ticket.IssueID}`
     }));
   }
 

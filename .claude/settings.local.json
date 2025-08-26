@@ -43,7 +43,12 @@
       "Bash(cmd /c \"\"\"C:\\Program Files\\Microsoft SDKs\\Azure\\CLI2\\wbin\\az.cmd\"\" functionapp show --name func-helpdesk-analysis --resource-group rg-helpdesk-analysis --query \"\"{name:name, state:state, hostName:defaultHostName, runtime:siteConfig.linuxFxVersion}\"\" --output json\")",
       "Bash(cmd /c:*)",
       "Bash(move:*)",
-      "Bash(zip:*)"
+      "Bash(zip:*)",
+      "Bash(git push:*)",
+      "Bash(\"C:\\Program Files\\Microsoft SDKs\\Azure\\CLI2\\wbin\\az.cmd\" functionapp deployment source config-zip --resource-group rg-helpdesk-analysis --name func-helpdesk-analysis --src deployment-grading.zip)",
+      "Bash(\"C:\\Program Files\\Microsoft SDKs\\Azure\\CLI2\\wbin\\az.cmd\" functionapp config appsettings set --resource-group rg-helpdesk-analysis --name func-helpdesk-analysis --settings \"GRADING_TESTING_MODE=true\")",
+      "Bash(\"C:\\Program Files\\Microsoft SDKs\\Azure\\CLI2\\wbin\\az.cmd\" functionapp list --resource-group rg-helpdesk-analysis --query \"[].{name:name, state:state}\" --output table)",
+      "WebFetch(domain:func-helpdesk-analysis.azurewebsites.net)"
     ],
     "deny": [],
     "ask": [],
