@@ -2,9 +2,53 @@
   "permissions": {
     "allow": [
       "Bash(git --version)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(gh:*)",
+      "Bash(winget install:*)",
+      "Bash(powershell:*)",
+      "Bash(npm install:*)",
+      "Bash(node:*)",
+      "Bash(grep:*)",
+      "Bash(awk:*)",
+      "Bash(az:*)",
+      "Bash(refreshenv)",
+      "Bash(\"C:\\Program Files (x86)\\Microsoft SDKs\\Azure\\CLI2\\wbin\\az.cmd\" --version)",
+      "Bash(where az)",
+      "Bash(\"C:\\Program Files\\Microsoft SDKs\\Azure\\CLI2\\wbin\\az.cmd\" --version)",
+      "Bash(\"C:\\Program Files\\Microsoft SDKs\\Azure\\CLI2\\wbin\\az.cmd\" login)",
+      "Bash(\"C:\\Program Files\\Microsoft SDKs\\Azure\\CLI2\\wbin\\az.cmd\" group create --name rg-helpdesk-analysis --location eastus)",
+      "Bash(\"C:\\Program Files\\Microsoft SDKs\\Azure\\CLI2\\wbin\\az.cmd\" storage account create --name sthelpdeskanalysis --resource-group rg-helpdesk-analysis --location eastus --sku Standard_LRS)",
+      "Bash(\"C:\\Program Files\\Microsoft SDKs\\Azure\\CLI2\\wbin\\az.cmd\" functionapp create --resource-group rg-helpdesk-analysis --consumption-plan-location eastus --runtime node --runtime-version 18 --functions-version 4 --name func-helpdesk-analysis --storage-account sthelpdeskanalysis)",
+      "Bash(\"C:\\Program Files\\Microsoft SDKs\\Azure\\CLI2\\wbin\\az.cmd\" functionapp create --resource-group rg-helpdesk-analysis --consumption-plan-location eastus --runtime node --runtime-version 22 --functions-version 4 --name func-helpdesk-analysis --storage-account sthelpdeskanalysis)",
+      "Bash(npm ls:*)",
+      "Bash(where func)",
+      "Bash(func --version)",
+      "Bash(\"C:\\Program Files (x86)\\Microsoft SDKs\\Azure\\CLI2\\wbin\\az.cmd\" --version)",
+      "Bash(\"C:\\Program Files\\Microsoft SDKs\\Azure\\CLI2\\wbin\\az.cmd\" account show)",
+      "Bash(nvm list:*)",
+      "Bash(npm prune:*)",
+      "Bash(\"C:\\Program Files\\Microsoft SDKs\\Azure\\CLI2\\wbin\\az.cmd\" group list --query \"[?name==''rg-helpdesk-analysis'']\" --output table)",
+      "Bash(\"C:\\Program Files\\Microsoft SDKs\\Azure\\CLI2\\wbin\\az.cmd\" functionapp show --name func-helpdesk-analysis --resource-group rg-helpdesk-analysis --query \"{name:name, state:state, hostName:defaultHostName}\" --output json)",
+      "Bash(cmd /c \"\"\"C:\\Program Files\\Microsoft SDKs\\Azure\\CLI2\\wbin\\az.cmd\"\" functionapp show --name func-helpdesk-analysis --resource-group rg-helpdesk-analysis --query \"\"{name:name, state:state, hostName:defaultHostName}\"\" --output json\")",
+      "Bash(func start --javascript)",
+      "Bash(func start:*)",
+      "Bash(func:*)",
+      "Bash(set PATH=%PATH%)",
+      "Bash(\"C:\\Program Files\\Microsoft SDKs\\Azure\\CLI2\\wbin\\az.cmd\" functionapp log tail --name func-helpdesk-analysis --resource-group rg-helpdesk-analysis)",
+      "Bash(curl:*)",
+      "Bash(find:*)",
+      "Bash(rg:*)",
+      "Bash(\"C:\\Program Files\\Microsoft SDKs\\Azure\\CLI2\\wbin\\az.cmd\" functionapp show --name func-helpdesk-analysis --resource-group rg-helpdesk-analysis --query \"{name:name, state:state, hostName:defaultHostName, runtime:siteConfig.linuxFxVersion}\" --output json)",
+      "Bash(cmd /c \"\"\"C:\\Program Files\\Microsoft SDKs\\Azure\\CLI2\\wbin\\az.cmd\"\" functionapp show --name func-helpdesk-analysis --resource-group rg-helpdesk-analysis --query \"\"{name:name, state:state, hostName:defaultHostName, runtime:siteConfig.linuxFxVersion}\"\" --output json\")",
+      "Bash(cmd /c:*)",
+      "Bash(move:*)",
+      "Bash(zip:*)"
     ],
     "deny": [],
-    "ask": []
+    "ask": [],
+    "additionalDirectories": [
+      "C:\\Program Files (x86)\\Microsoft SDKs\\Azure\\CLI2"
+    ]
   }
 }

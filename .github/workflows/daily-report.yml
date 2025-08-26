@@ -1,0 +1,61 @@
+name: Daily Helpdesk Report
+
+on:
+  schedule:
+    # Run every weekday at 8:00 AM UTC (adjust timezone as needed)
+    - cron: '0 8 * * 1-5'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  generate-report:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run helpdesk analysis
+      env:
+        # SharePoint/OneDrive Configuration
+        SHAREPOINT_SITE_URL: ${{ secrets.SHAREPOINT_SITE_URL }}
+        SHAREPOINT_FILE_PATH: ${{ secrets.SHAREPOINT_FILE_PATH }}
+        MICROSOFT_CLIENT_ID: ${{ secrets.MICROSOFT_CLIENT_ID }}
+        MICROSOFT_CLIENT_SECRET: ${{ secrets.MICROSOFT_CLIENT_SECRET }}
+        MICROSOFT_TENANT_ID: ${{ secrets.MICROSOFT_TENANT_ID }}
+        
+        # Email Configuration
+        SMTP_HOST: ${{ secrets.SMTP_HOST }}
+        SMTP_PORT: ${{ secrets.SMTP_PORT }}
+        SMTP_USER: ${{ secrets.SMTP_USER }}
+        SMTP_PASS: ${{ secrets.SMTP_PASS }}
+        FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
+        FROM_NAME: ${{ secrets.FROM_NAME }}
+        
+        # Analysis Configuration
+        STALE_TICKET_DAYS: ${{ secrets.STALE_TICKET_DAYS || '3' }}
+        OVERDUE_TICKET_DAYS: ${{ secrets.OVERDUE_TICKET_DAYS || '5' }}
+        QUICK_WIN_KEYWORDS: ${{ secrets.QUICK_WIN_KEYWORDS || 'password,unlock,reset,printer,email' }}
+        MANAGER_EMAIL: ${{ secrets.MANAGER_EMAIL }}
+        
+        # Notification Settings
+        SEND_INDIVIDUAL_REMINDERS: ${{ secrets.SEND_INDIVIDUAL_REMINDERS || 'true' }}
+        SEND_DAILY_SUMMARY: ${{ secrets.SEND_DAILY_SUMMARY || 'true' }}
+        SUMMARY_TIME: ${{ secrets.SUMMARY_TIME || '08:00' }}
+      
+      run: npm start
+
+    - name: Upload logs (on failure)
+      if: failure()
+      uses: actions/upload-artifact@v3
+      with:
+        name: error-logs
+        path: logs/
