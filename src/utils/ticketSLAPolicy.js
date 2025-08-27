@@ -91,15 +91,16 @@ class TicketSLAPolicy {
    * Check if ticket assignment violates SLA
    * @param {Date} createdDate 
    * @param {Date} assignedDate 
+   * @param {string} priority - Ticket priority (Critical, High, Normal, Low)
    * @returns {object} SLA status
    */
-  checkAssignmentSLA(createdDate, assignedDate) {
+  checkAssignmentSLA(createdDate, assignedDate, priority = 'normal') {
+    const priorityLevel = this.getPriorityLevel(priority);
+    const slaLimit = this.slaRules.assignment[priorityLevel];
+    
     if (!assignedDate) {
       const now = new Date();
       const hoursElapsed = this.getBusinessHoursBetween(createdDate, now);
-      const dayOfWeek = createdDate.getDay();
-      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-      const slaLimit = this.slaRules.assignment[isWeekend ? 'weekend' : 'weekday'];
       
       return {
         status: hoursElapsed > slaLimit ? 'VIOLATED' : 'AT_RISK',
@@ -111,9 +112,6 @@ class TicketSLAPolicy {
     }
     
     const hoursToAssign = this.getBusinessHoursBetween(createdDate, assignedDate);
-    const dayOfWeek = createdDate.getDay();
-    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-    const slaLimit = this.slaRules.assignment[isWeekend ? 'weekend' : 'weekday'];
     
     return {
       status: hoursToAssign <= slaLimit ? 'COMPLIANT' : 'VIOLATED',
@@ -128,13 +126,16 @@ class TicketSLAPolicy {
    * Check first response SLA
    * @param {Date} createdDate 
    * @param {Date} firstResponseDate 
+   * @param {string} priority - Ticket priority (Critical, High, Normal, Low)
    * @returns {object} SLA status
    */
-  checkFirstResponseSLA(createdDate, firstResponseDate) {
+  checkFirstResponseSLA(createdDate, firstResponseDate, priority = 'normal') {
+    const priorityLevel = this.getPriorityLevel(priority);
+    const slaLimit = this.slaRules.firstResponse[priorityLevel];
+    
     if (!firstResponseDate) {
       const now = new Date();
       const hoursElapsed = this.getBusinessHoursBetween(createdDate, now);
-      const slaLimit = this.slaRules.firstResponse.weekday; // Same for weekday/weekend
       
       return {
         status: hoursElapsed > slaLimit ? 'VIOLATED' : 'AT_RISK',
@@ -146,7 +147,6 @@ class TicketSLAPolicy {
     }
     
     const hoursToResponse = this.getBusinessHoursBetween(createdDate, firstResponseDate);
-    const slaLimit = this.slaRules.firstResponse.weekday;
     
     return {
       status: hoursToResponse <= slaLimit ? 'COMPLIANT' : 'VIOLATED',
@@ -193,12 +193,13 @@ class TicketSLAPolicy {
     const assignedDate = ticket.Tech_Assigned_Clean ? this.estimateAssignmentDate(ticket) : null;
     const firstResponseDate = this.getFirstTechResponseDate(ticket);
     const { lastUserResponse, lastTechResponse, hasUserResponseAfterTech } = this.parseResponseHistory(ticket);
+    const priority = ticket.Priority || 'Normal';
     
     return {
       ticketId: ticket.IssueID,
       created: createdDate,
-      assignment: this.checkAssignmentSLA(createdDate, assignedDate),
-      firstResponse: this.checkFirstResponseSLA(createdDate, firstResponseDate),
+      assignment: this.checkAssignmentSLA(createdDate, assignedDate, priority),
+      firstResponse: this.checkFirstResponseSLA(createdDate, firstResponseDate, priority),
       followUp: this.checkFollowUpSLA(lastUserResponse, lastTechResponse, hasUserResponseAfterTech),
       overallRisk: this.calculateOverallRisk(ticket),
       recommendedAction: this.getRecommendedAction(ticket)
@@ -282,6 +283,21 @@ class TicketSLAPolicy {
     if (age > 7) return 'FOLLOW_UP_REQUIRED';
     
     return 'MONITOR';
+  }
+
+  /**
+   * Get priority level from priority string
+   * @param {string} priority - Priority string from ticket
+   * @returns {string} normalized priority level
+   */
+  getPriorityLevel(priority) {
+    if (!priority) return 'normal';
+    
+    const p = priority.toLowerCase();
+    if (p.includes('critical') || p.includes('urgent')) return 'critical';
+    if (p.includes('high')) return 'high';
+    if (p.includes('low')) return 'low';
+    return 'normal';
   }
 }
 
