@@ -566,19 +566,28 @@ class EmailDispatcher {
             
             ${sections.tech_performance && Object.keys(sections.tech_performance).length > 0 ? `
             <div class="section">
-                <h2><span class="emoji">👥</span>Technician Performance Summary</h2>
-                <div class="perf-grid">
-                ${Object.entries(sections.tech_performance).slice(0, 8).map(([tech, stats]) => `
-                    <div class="perf-card">
-                        <div class="tech-name">${tech.replace('bhopb', '')}</div>
-                        <div style="margin: 8px 0; font-size: 14px;">
-                            <strong>${stats.totalTickets}</strong> tickets • 
-                            <strong>${stats.avgAge}</strong> days avg • 
-                            <span class="${stats.oldTicketPercent > 30 ? 'critical' : stats.oldTicketPercent > 15 ? 'high' : ''}">${stats.oldTicketPercent}%</span> aging
-                        </div>
-                    </div>
+                <h2><span class="emoji">👥</span>Technician Performance Summary (All Active Techs)</h2>
+                <table width="100%" cellpadding="0" cellspacing="0" style="border: 2px solid #000000; margin-top: 15px;">
+                    <tr>
+                        <th style="background-color: #1e3a5f; color: #ffffff; padding: 10px; text-align: left; border: 1px solid #000000; font-weight: bold;">Technician Email</th>
+                        <th style="background-color: #1e3a5f; color: #ffffff; padding: 10px; text-align: center; border: 1px solid #000000; font-weight: bold;">Total</th>
+                        <th style="background-color: #1e3a5f; color: #ffffff; padding: 10px; text-align: center; border: 1px solid #000000; font-weight: bold;">Avg Age</th>
+                        <th style="background-color: #1e3a5f; color: #ffffff; padding: 10px; text-align: center; border: 1px solid #000000; font-weight: bold;">Old %</th>
+                        <th style="background-color: #1e3a5f; color: #ffffff; padding: 10px; text-align: left; border: 1px solid #000000; font-weight: bold;">Status</th>
+                    </tr>
+                ${Object.entries(sections.tech_performance)
+                    .sort((a, b) => b[1].oldTicketPercent - a[1].oldTicketPercent)
+                    .map(([techEmail, stats], index) => `
+                    <tr style="background-color: ${index % 2 === 0 ? '#ffffff' : '#f0f0f0'};">
+                        <td style="padding: 8px; border: 1px solid #666666; color: #0044cc; font-weight: bold;">${techEmail}</td>
+                        <td style="padding: 8px; text-align: center; border: 1px solid #666666; color: #000000; font-weight: bold;">${stats.totalTickets}</td>
+                        <td style="padding: 8px; text-align: center; border: 1px solid #666666; color: #000000;">${stats.avgAge} days</td>
+                        <td style="padding: 8px; text-align: center; border: 1px solid #666666; background-color: ${stats.oldTicketPercent > 30 ? '#ffcccc' : stats.oldTicketPercent > 15 ? '#ffe6cc' : '#ffffff'}; color: ${stats.oldTicketPercent > 30 ? '#cc0000' : stats.oldTicketPercent > 15 ? '#ff6600' : '#000000'}; font-weight: bold;">${stats.oldTicketPercent}%</td>
+                        <td style="padding: 8px; border: 1px solid #666666; color: ${stats.oldTicketPercent > 30 ? '#cc0000' : '#000000'}; font-weight: ${stats.oldTicketPercent > 30 ? 'bold' : 'normal'};">${stats.oldTicketPercent > 30 ? '⚠️ Review workload' : stats.oldTicketPercent > 15 ? 'Monitor aging' : '✓ Good'}</td>
+                    </tr>
                 `).join('')}
-                </div>
+                </table>
+                <p style="margin-top: 10px; font-size: 12px; color: #333333;">Sorted by aging percentage (highest first) • Old = 14+ days</p>
             </div>
             ` : ''}
             

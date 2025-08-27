@@ -238,8 +238,12 @@ class SupervisorDashboardService {
       const tech = ticket.Tech_Assigned_Clean;
       if (!tech || tech.trim() === '') return;
       
-      if (!techStats[tech]) {
-        techStats[tech] = {
+      // Convert tech name to email format for display
+      const techEmail = this.getTechEmail(tech);
+      
+      if (!techStats[techEmail]) {
+        techStats[techEmail] = {
+          originalName: tech,
           totalTickets: 0,
           oldTickets: 0,
           avgAge: 0,
@@ -248,20 +252,34 @@ class SupervisorDashboardService {
       }
       
       const age = this.calculateAge(ticket.IssueDate);
-      techStats[tech].totalTickets++;
-      techStats[tech].avgAge += age;
+      techStats[techEmail].totalTickets++;
+      techStats[techEmail].avgAge += age;
       
-      if (age > 14) techStats[tech].oldTickets++;
-      if (age > 3) techStats[tech].noResponseCount++; // Simplified check
+      if (age > 14) techStats[techEmail].oldTickets++;
+      if (age > 3) techStats[techEmail].noResponseCount++; // Simplified check
     });
     
     // Calculate averages and trends
-    Object.keys(techStats).forEach(tech => {
-      techStats[tech].avgAge = Math.round(techStats[tech].avgAge / techStats[tech].totalTickets);
-      techStats[tech].oldTicketPercent = Math.round((techStats[tech].oldTickets / techStats[tech].totalTickets) * 100);
+    Object.keys(techStats).forEach(techEmail => {
+      techStats[techEmail].avgAge = Math.round(techStats[techEmail].avgAge / techStats[techEmail].totalTickets);
+      techStats[techEmail].oldTicketPercent = Math.round((techStats[techEmail].oldTickets / techStats[techEmail].totalTickets) * 100);
     });
     
     return techStats;
+  }
+
+  getTechEmail(techName) {
+    // Convert domain\username to email format
+    if (!techName) return techName;
+    
+    if (techName.includes('\\')) {
+      const parts = techName.split('\\');
+      const username = parts[parts.length - 1];
+      return `${username.toLowerCase()}@banyancenters.com`;
+    }
+    
+    // If already in email format or just a name, return as is
+    return techName;
   }
 
   createDirectPriorities(ticketData) {
