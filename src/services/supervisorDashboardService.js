@@ -36,6 +36,7 @@ class SupervisorDashboardService {
     
     openTickets.forEach(ticket => {
       const slaAnalysis = this.slaPolicy.analyzeSLA(ticket);
+      const techEmail = ticket.Tech_Assigned_Clean ? this.getTechEmail(ticket.Tech_Assigned_Clean) : 'UNASSIGNED';
       
       // Assignment SLA violations
       if (slaAnalysis.assignment.status === 'VIOLATED') {
@@ -46,6 +47,8 @@ class SupervisorDashboardService {
           message: slaAnalysis.assignment.message,
           hoursOverdue: slaAnalysis.assignment.hoursOverdue,
           action: 'ASSIGN_IMMEDIATELY',
+          assigned: techEmail,
+          subject: (ticket.Subject || '').substring(0, 60),
           url: `http://helpdesk/Ticket/${ticket.IssueID}`
         });
       }
@@ -59,6 +62,8 @@ class SupervisorDashboardService {
           message: slaAnalysis.firstResponse.message,
           hoursOverdue: slaAnalysis.firstResponse.hoursOverdue,
           action: 'RESPOND_NOW',
+          assigned: techEmail,
+          subject: (ticket.Subject || '').substring(0, 60),
           url: `http://helpdesk/Ticket/${ticket.IssueID}`
         });
       }
@@ -74,12 +79,15 @@ class SupervisorDashboardService {
     
     // Use the existing no-response alerts (already 3+ days with no tech response)
     ticketData.noResponseAlerts.forEach(alert => {
+      const techEmail = alert.ticket.Tech_Assigned_Clean ? 
+        this.getTechEmail(alert.ticket.Tech_Assigned_Clean) : 'UNASSIGNED';
+      
       noResponseTickets.push({
         ticketId: alert.ticket.IssueID,
         daysSinceCreated: alert.daysSinceCreated,
         daysSinceLastTechResponse: alert.lastTechResponse ? 
           this.calculateAge(alert.lastTechResponse.date) : alert.daysSinceCreated,
-        assigned: alert.ticket.Tech_Assigned_Clean || 'UNASSIGNED',
+        assigned: techEmail,
         subject: (alert.ticket.Subject || '').substring(0, 70),
         priority: this.getPriorityLevel(alert.ticket.Priority),
         urgencyLevel: alert.urgencyLevel,
@@ -175,12 +183,16 @@ class SupervisorDashboardService {
       }
       
       if (vipReason) {
+        const submitterEmail = this.getTechEmail(ticket.Submitted_By);
+        const assignedEmail = ticket.Tech_Assigned_Clean ? 
+          this.getTechEmail(ticket.Tech_Assigned_Clean) : 'UNASSIGNED';
+        
         vipTickets.push({
           ticketId: ticket.IssueID,
-          submitter: ticket.Submitted_By,
+          submitter: submitterEmail,
           subject: (ticket.Subject || '').substring(0, 80),
           age: this.calculateAge(ticket.IssueDate),
-          assigned: ticket.Tech_Assigned_Clean || 'UNASSIGNED',
+          assigned: assignedEmail,
           vipReason: vipReason,
           vipTerm: matchedTerm,
           url: `http://helpdesk/Ticket/${ticket.IssueID}`
@@ -192,19 +204,26 @@ class SupervisorDashboardService {
   }
 
   async findQuickWins(openTickets) {
+    const quickWinKeywords = [
+      'password', 'reset', 'unlock', 'keyboard', 'mouse', 'cable',
+      'printer', 'monitor', 'access', 'permission', 'login'
+    ];
+    
     const quickWinCandidates = openTickets.filter(ticket => {
       const subject = (ticket.Subject || '').toLowerCase();
       const body = (ticket.Ticket_Body || '').toLowerCase();
+      const combinedText = subject + ' ' + body;
       
-      // Look for common quick-win keywords
-      const quickWinKeywords = [
-        'password', 'reset', 'unlock', 'keyboard', 'mouse', 'cable',
-        'printer', 'monitor', 'access', 'permission', 'login'
-      ];
-      
-      return quickWinKeywords.some(keyword => 
-        subject.includes(keyword) || body.includes(keyword)
+      // Track which keywords were matched
+      const matchedKeywords = quickWinKeywords.filter(keyword => 
+        combinedText.includes(keyword)
       );
+      
+      if (matchedKeywords.length > 0) {
+        ticket._matchedKeywords = matchedKeywords; // Store for later use
+        return true;
+      }
+      return false;
     }).slice(0, 20); // Limit for AI analysis
     
     if (quickWinCandidates.length === 0) return [];
@@ -212,7 +231,12 @@ class SupervisorDashboardService {
     try {
       const prompt = this.buildQuickWinsPrompt(quickWinCandidates);
       const response = await this.aiService.analyzeWithCheapModel(prompt);
-      return this.parseQuickWinsResponse(response);
+      const parsed = this.parseQuickWinsResponse(response);
+      // Add matched keywords to each result
+      return parsed.map(item => ({
+        ...item,
+        matchedKeywords: quickWinCandidates.find(t => t.IssueID === item.ticketId)?._matchedKeywords || []
+      }));
     } catch (error) {
       console.log('Quick wins analysis failed, using keyword fallback');
       return this.createKeywordQuickWins(quickWinCandidates);
@@ -235,11 +259,15 @@ class SupervisorDashboardService {
         comments.includes('awaiting response') ||
         comments.includes('please confirm')
       )) {
+        const techEmail = ticket.Tech_Assigned_Clean ? 
+          this.getTechEmail(ticket.Tech_Assigned_Clean) : 'UNASSIGNED';
+        
         candidates.push({
           ticketId: ticket.IssueID,
           reason: 'No user response for 7+ days',
           lastActivity: `${lastResponseDays} days ago`,
-          assigned: ticket.Tech_Assigned_Clean,
+          assigned: techEmail,
+          subject: (ticket.Subject || '').substring(0, 60),
           url: `http://helpdesk/Ticket/${ticket.IssueID}`
         });
       }
