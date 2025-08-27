@@ -348,44 +348,45 @@ class EmailDispatcher {
     <!DOCTYPE html>
     <html>
     <head>
-        <style>
-            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
-            .container { max-width: 1400px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-            .header { background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white; padding: 30px; text-align: center; }
-            .header h1 { margin: 0; font-size: 28px; font-weight: 300; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
-            .header p { margin: 10px 0 0 0; opacity: 0.9; font-size: 14px; color: white; }
-            .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0; }
-            .summary-card { padding: 20px; text-align: center; border-bottom: 1px solid #e1e5e9; }
-            .summary-card:nth-child(even) { background: #f8f9fa; }
-            .summary-value { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
-            .summary-label { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
-            .section { padding: 25px; border-bottom: 1px solid #e1e5e9; }
-            .section h2 { color: #2c3e50; margin-top: 0; font-size: 18px; display: flex; align-items: center; }
-            .section h2 .emoji { margin-right: 8px; }
-            .critical { color: #dc3545; font-weight: bold; background: #fff5f5; padding: 2px 8px; border-radius: 4px; }
-            .high { color: #fd7e14; font-weight: bold; }
-            .medium { color: #ffc107; font-weight: bold; }
-            .ticket-link { font-family: monospace; background: #f8f9fa; padding: 4px 8px; border-radius: 4px; text-decoration: none; color: #0066cc; border: 1px solid #dee2e6; }
-            .ticket-link:hover { background: #e9ecef; }
-            .tech-name { font-weight: bold; color: #0066cc; }
-            .aging-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin: 15px 0; }
-            .aging-bucket { background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center; border: 2px solid #dee2e6; }
-            .aging-bucket.critical { border-color: #dc3545; background: #fff5f5; }
-            .aging-bucket.concern { border-color: #ffc107; background: #fffbf0; }
+        <meta charset="utf-8">
+        <style type="text/css">
+            body { font-family: Arial, sans-serif !important; margin: 0; padding: 10px; background-color: #ffffff; color: #000000; }
+            .container { width: 100%; max-width: 800px; margin: 0 auto; background-color: #ffffff; border: 2px solid #000000; }
+            .header { background-color: #1e3a5f; color: #ffffff; padding: 20px; text-align: center; }
+            .header h1 { margin: 0; font-size: 24px; font-weight: bold; color: #ffffff; }
+            .header p { margin: 10px 0 0 0; color: #ffffff; font-size: 14px; }
+            .summary-table { width: 100%; border-collapse: collapse; }
+            .summary-table td { padding: 15px; text-align: center; border: 1px solid #333333; background-color: #ffffff; }
+            .summary-value { font-size: 28px; font-weight: bold; color: #000000; display: block; }
+            .summary-label { font-size: 12px; color: #333333; text-transform: uppercase; font-weight: bold; display: block; margin-top: 5px; }
+            .section { padding: 20px; border-top: 2px solid #cccccc; background-color: #ffffff; }
+            .section h2 { color: #000000; margin: 0 0 10px 0; font-size: 18px; font-weight: bold; border-bottom: 2px solid #1e3a5f; padding-bottom: 5px; }
+            .section h2 .emoji { margin-right: 8px; display: inline; }
+            .critical { color: #ffffff; background-color: #cc0000; padding: 3px 8px; font-weight: bold; display: inline-block; }
+            .high { color: #cc0000; font-weight: bold; }
+            .medium { color: #ff6600; font-weight: bold; }
+            .ticket-link { font-family: 'Courier New', monospace; background-color: #eeeeee; padding: 4px 8px; text-decoration: none; color: #0044cc; border: 1px solid #666666; font-weight: bold; }
+            .ticket-link:hover { background-color: #dddddd; }
+            .tech-name { font-weight: bold; color: #0044cc; }
+            .aging-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+            .aging-bucket { padding: 15px; text-align: center; border: 2px solid #666666; background-color: #ffffff; }
+            .aging-bucket.critical { border-color: #cc0000; background-color: #ffcccc; }
+            .aging-bucket.concern { border-color: #ff6600; background-color: #ffe6cc; }
             .bucket-count { font-size: 24px; font-weight: bold; margin-bottom: 5px; }
-            .bucket-label { font-size: 12px; color: #666; }
-            ul { margin: 10px 0; padding-left: 20px; }
-            li { margin: 8px 0; line-height: 1.5; }
-            .perf-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
-            .perf-card { background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #007bff; }
-            .footer { padding: 20px; text-align: center; background: #f8f9fa; color: #666; font-size: 12px; }
-            .status-badge { background: #007bff; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; margin-left: 10px; }
-            table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-            th { background: #f8f9fa; padding: 10px; text-align: left; border-bottom: 2px solid #dee2e6; font-weight: 600; color: #495057; }
-            td { padding: 8px 10px; border-bottom: 1px solid #e9ecef; }
-            tr:hover { background: #f8f9fa; }
-            .violation-row-critical { background: #fff5f5; }
-            .violation-row-high { background: #fff8f0; }
+            .bucket-label { font-size: 12px; color: #333333; font-weight: bold; }
+            ul { margin: 10px 0; padding-left: 20px; color: #000000; }
+            li { margin: 8px 0; line-height: 1.5; color: #000000; }
+            .perf-table { width: 100%; border-collapse: collapse; }
+            .perf-card { background-color: #f0f0f0; padding: 15px; border-left: 4px solid #0044cc; border: 1px solid #333333; }
+            .footer { padding: 15px; text-align: center; background-color: #eeeeee; color: #000000; font-size: 11px; border-top: 2px solid #000000; }
+            .status-badge { background-color: #0044cc; color: #ffffff; padding: 2px 8px; font-size: 11px; margin-left: 10px; font-weight: bold; display: inline-block; }
+            table { width: 100%; border-collapse: collapse; margin: 15px 0; border: 2px solid #000000; }
+            th { background-color: #1e3a5f; padding: 10px; text-align: left; border: 1px solid #000000; font-weight: bold; color: #ffffff; }
+            td { padding: 8px 10px; border: 1px solid #666666; color: #000000; background-color: #ffffff; }
+            tr:hover { background-color: #f0f0f0; }
+            .violation-row-critical { background-color: #ffcccc !important; }
+            .violation-row-high { background-color: #ffe6cc !important; }
+            small { display: block; margin-top: 3px; color: #333333; }
         </style>
     </head>
     <body>
@@ -395,47 +396,44 @@ class EmailDispatcher {
                 <p>${new Date().toLocaleDateString('en-US', {timeZone: 'America/New_York'})} • ${new Date().toLocaleTimeString('en-US', {timeZone: 'America/New_York'})} EST</p>
             </div>
             
-            <div class="summary-grid">
-                <div class="summary-card">
-                    <div class="summary-value">${summary.totalOpen}</div>
-                    <div class="summary-label">Total Open Tickets</div>
-                </div>
-                
-                <div class="summary-card">
-                    <div class="summary-value critical">${summary.slaViolations}</div>
-                    <div class="summary-label">SLA Violations</div>
-                </div>
-                
-                <div class="summary-card">
-                    <div class="summary-value ${summary.noTechResponse3Days > 50 ? 'critical' : summary.noTechResponse3Days > 20 ? 'high' : 'medium'}">${summary.noTechResponse3Days}</div>
-                    <div class="summary-label">3+ Days No Tech Response</div>
-                </div>
-                
-                <div class="summary-card">
-                    <div class="summary-value ${summary.criticalAging > 20 ? 'critical' : summary.criticalAging > 10 ? 'high' : ''}">${summary.criticalAging}</div>
-                    <div class="summary-label">Critical Aging (22+ Days)</div>
-                </div>
-                
-                <div class="summary-card">
-                    <div class="summary-value ${summary.immediateTriage > 0 ? 'high' : ''}">${summary.immediateTriage}</div>
-                    <div class="summary-label">Immediate Triage</div>
-                </div>
-                
-                <div class="summary-card">
-                    <div class="summary-value ${summary.vipAlerts > 0 ? 'critical' : ''}">${summary.vipAlerts}</div>
-                    <div class="summary-label">VIP Alerts</div>
-                </div>
-                
-                <div class="summary-card">
-                    <div class="summary-value ${summary.quickWins > 0 ? 'high' : ''}">${summary.quickWins}</div>
-                    <div class="summary-label">Quick Wins</div>
-                </div>
-                
-                <div class="summary-card">
-                    <div class="summary-value">${summary.closureCandidates}</div>
-                    <div class="summary-label">Ready to Close</div>
-                </div>
-            </div>
+            <table class="summary-table" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 20px;">
+                <tr>
+                    <td style="padding: 15px; text-align: center; border: 1px solid #333333; background-color: #ffffff;">
+                        <span class="summary-value">${summary.totalOpen}</span>
+                        <span class="summary-label">Total Open</span>
+                    </td>
+                    <td style="padding: 15px; text-align: center; border: 1px solid #333333; background-color: #ffcccc;">
+                        <span class="summary-value" style="color: #cc0000; font-weight: bold;">${summary.slaViolations}</span>
+                        <span class="summary-label">SLA Violations</span>
+                    </td>
+                    <td style="padding: 15px; text-align: center; border: 1px solid #333333; background-color: ${summary.noTechResponse3Days > 50 ? '#ffcccc' : summary.noTechResponse3Days > 20 ? '#ffe6cc' : '#ffffff'};">
+                        <span class="summary-value" style="color: ${summary.noTechResponse3Days > 50 ? '#cc0000' : summary.noTechResponse3Days > 20 ? '#cc0000' : '#ff6600'};">${summary.noTechResponse3Days}</span>
+                        <span class="summary-label">No Response 3+ Days</span>
+                    </td>
+                    <td style="padding: 15px; text-align: center; border: 1px solid #333333; background-color: ${summary.criticalAging > 20 ? '#ffcccc' : summary.criticalAging > 10 ? '#ffe6cc' : '#ffffff'};">
+                        <span class="summary-value" style="color: ${summary.criticalAging > 20 ? '#cc0000' : summary.criticalAging > 10 ? '#cc0000' : '#000000'};">${summary.criticalAging}</span>
+                        <span class="summary-label">Critical Aging</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 15px; text-align: center; border: 1px solid #333333; background-color: ${summary.immediateTriage > 0 ? '#ffe6cc' : '#ffffff'};">
+                        <span class="summary-value" style="color: ${summary.immediateTriage > 0 ? '#cc0000' : '#000000'};">${summary.immediateTriage}</span>
+                        <span class="summary-label">Immediate Triage</span>
+                    </td>
+                    <td style="padding: 15px; text-align: center; border: 1px solid #333333; background-color: ${summary.vipAlerts > 0 ? '#ffcccc' : '#ffffff'};">
+                        <span class="summary-value" style="color: ${summary.vipAlerts > 0 ? '#cc0000' : '#000000'}; font-weight: bold;">${summary.vipAlerts}</span>
+                        <span class="summary-label">VIP Alerts</span>
+                    </td>
+                    <td style="padding: 15px; text-align: center; border: 1px solid #333333; background-color: ${summary.quickWins > 0 ? '#e6ffe6' : '#ffffff'};">
+                        <span class="summary-value" style="color: ${summary.quickWins > 0 ? '#006600' : '#000000'};">${summary.quickWins}</span>
+                        <span class="summary-label">Quick Wins</span>
+                    </td>
+                    <td style="padding: 15px; text-align: center; border: 1px solid #333333; background-color: #ffffff;">
+                        <span class="summary-value">${summary.closureCandidates}</span>
+                        <span class="summary-label">Ready to Close</span>
+                    </td>
+                </tr>
+            </table>
             
             ${sections.sla_violations && sections.sla_violations.length > 0 ? `
             <div class="section">
@@ -476,28 +474,30 @@ class EmailDispatcher {
             ${sections.aging_analysis ? `
             <div class="section">
                 <h2><span class="emoji">📊</span>Ticket Aging Analysis</h2>
-                <div class="aging-grid">
-                    <div class="aging-bucket">
-                        <div class="bucket-count">${sections.aging_analysis.buckets['0-3_days'].length}</div>
-                        <div class="bucket-label">0-3 Days<br>Fresh</div>
-                    </div>
-                    <div class="aging-bucket">
-                        <div class="bucket-count">${sections.aging_analysis.buckets['4-7_days'].length}</div>
-                        <div class="bucket-label">4-7 Days<br>Normal</div>
-                    </div>
-                    <div class="aging-bucket">
-                        <div class="bucket-count">${sections.aging_analysis.buckets['8-14_days'].length}</div>
-                        <div class="bucket-label">8-14 Days<br>Watch</div>
-                    </div>
-                    <div class="aging-bucket concern">
-                        <div class="bucket-count">${sections.aging_analysis.buckets['15-21_days'].length}</div>
-                        <div class="bucket-label">15-21 Days<br>Manager Review</div>
-                    </div>
-                    <div class="aging-bucket critical">
-                        <div class="bucket-count">${sections.aging_analysis.buckets['22+_days'].length}</div>
-                        <div class="bucket-label">22+ Days<br>Escalate</div>
-                    </div>
-                </div>
+                <table class="aging-table" cellpadding="0" cellspacing="0" width="100%">
+                    <tr>
+                        <td style="padding: 15px; text-align: center; border: 2px solid #666666; background-color: #ffffff;">
+                            <div style="font-size: 24px; font-weight: bold; color: #000000;">${sections.aging_analysis.buckets['0-3_days'].length}</div>
+                            <div style="font-size: 12px; color: #333333; font-weight: bold;">0-3 Days<br>Fresh</div>
+                        </td>
+                        <td style="padding: 15px; text-align: center; border: 2px solid #666666; background-color: #ffffff;">
+                            <div style="font-size: 24px; font-weight: bold; color: #000000;">${sections.aging_analysis.buckets['4-7_days'].length}</div>
+                            <div style="font-size: 12px; color: #333333; font-weight: bold;">4-7 Days<br>Normal</div>
+                        </td>
+                        <td style="padding: 15px; text-align: center; border: 2px solid #666666; background-color: #ffffff;">
+                            <div style="font-size: 24px; font-weight: bold; color: #000000;">${sections.aging_analysis.buckets['8-14_days'].length}</div>
+                            <div style="font-size: 12px; color: #333333; font-weight: bold;">8-14 Days<br>Watch</div>
+                        </td>
+                        <td style="padding: 15px; text-align: center; border: 2px solid #ff6600; background-color: #ffe6cc;">
+                            <div style="font-size: 24px; font-weight: bold; color: #ff6600;">${sections.aging_analysis.buckets['15-21_days'].length}</div>
+                            <div style="font-size: 12px; color: #333333; font-weight: bold;">15-21 Days<br>Manager Review</div>
+                        </td>
+                        <td style="padding: 15px; text-align: center; border: 2px solid #cc0000; background-color: #ffcccc;">
+                            <div style="font-size: 24px; font-weight: bold; color: #cc0000;">${sections.aging_analysis.buckets['22+_days'].length}</div>
+                            <div style="font-size: 12px; color: #333333; font-weight: bold;">22+ Days<br>Escalate</div>
+                        </td>
+                    </tr>
+                </table>
             </div>
             ` : ''}
             
