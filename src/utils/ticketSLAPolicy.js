@@ -9,19 +9,10 @@ class TicketSLAPolicy {
     };
     
     this.slaRules = {
-      assignment: {
-        critical: 1,   // 1 business hour
-        high: 2,       // 2 business hours
-        normal: 4,     // 4 business hours
-        low: 8         // 8 business hours
-      },
-      firstResponse: {
-        critical: 1,   // 1 business hour
-        high: 2,       // 2 business hours
-        normal: 4,     // 4 business hours
-        low: 8         // 8 business hours
-      },
-      userFollowUp: 4,             // 4 business hours after user responds
+      assignment: 1,        // 1 business hour to assign
+      firstResponse: 2,     // 2 business hours after assigned for tech response
+      userFollowUp: 16,     // 2 days (16 business hours) for tech to respond after user response
+      techFollowUp: 24,     // 3 days (24 business hours) for response after tech response with no user response
       resolution: {
         critical: 8,   // 8 business hours (1 day)
         high: 16,      // 16 business hours (2 days)
@@ -91,12 +82,10 @@ class TicketSLAPolicy {
    * Check if ticket assignment violates SLA
    * @param {Date} createdDate 
    * @param {Date} assignedDate 
-   * @param {string} priority - Ticket priority (Critical, High, Normal, Low)
    * @returns {object} SLA status
    */
-  checkAssignmentSLA(createdDate, assignedDate, priority = 'normal') {
-    const priorityLevel = this.getPriorityLevel(priority);
-    const slaLimit = this.slaRules.assignment[priorityLevel];
+  checkAssignmentSLA(createdDate, assignedDate) {
+    const slaLimit = this.slaRules.assignment; // 1 business hour for all priorities
     
     if (!assignedDate) {
       const now = new Date();
@@ -107,7 +96,7 @@ class TicketSLAPolicy {
         hoursElapsed,
         slaLimit,
         hoursOverdue: Math.max(0, hoursElapsed - slaLimit),
-        message: `Unassigned for ${hoursElapsed.toFixed(1)} hours (SLA: ${slaLimit} hours)`
+        message: `Unassigned for ${hoursElapsed.toFixed(1)} hours (SLA: ${slaLimit} hour)`
       };
     }
     
@@ -118,42 +107,48 @@ class TicketSLAPolicy {
       hoursElapsed: hoursToAssign,
       slaLimit,
       hoursOverdue: Math.max(0, hoursToAssign - slaLimit),
-      message: `Assigned in ${hoursToAssign.toFixed(1)} hours (SLA: ${slaLimit} hours)`
+      message: `Assigned in ${hoursToAssign.toFixed(1)} hours (SLA: ${slaLimit} hour)`
     };
   }
 
   /**
-   * Check first response SLA
-   * @param {Date} createdDate 
+   * Check first response SLA (after assignment)
+   * @param {Date} assignedDate 
    * @param {Date} firstResponseDate 
-   * @param {string} priority - Ticket priority (Critical, High, Normal, Low)
    * @returns {object} SLA status
    */
-  checkFirstResponseSLA(createdDate, firstResponseDate, priority = 'normal') {
-    const priorityLevel = this.getPriorityLevel(priority);
-    const slaLimit = this.slaRules.firstResponse[priorityLevel];
+  checkFirstResponseSLA(assignedDate, firstResponseDate) {
+    const slaLimit = this.slaRules.firstResponse; // 2 business hours after assignment
     
-    if (!firstResponseDate) {
-      const now = new Date();
-      const hoursElapsed = this.getBusinessHoursBetween(createdDate, now);
-      
+    if (!assignedDate) {
+      // Can't check first response SLA without assignment date
       return {
-        status: hoursElapsed > slaLimit ? 'VIOLATED' : 'AT_RISK',
-        hoursElapsed,
-        slaLimit,
-        hoursOverdue: Math.max(0, hoursElapsed - slaLimit),
-        message: `No response for ${hoursElapsed.toFixed(1)} hours (SLA: ${slaLimit} hours)`
+        status: 'UNKNOWN',
+        message: 'Cannot calculate first response SLA without assignment date'
       };
     }
     
-    const hoursToResponse = this.getBusinessHoursBetween(createdDate, firstResponseDate);
+    if (!firstResponseDate) {
+      const now = new Date();
+      const hoursElapsed = this.getBusinessHoursBetween(assignedDate, now);
+      
+      return {
+        status: hoursElapsed > slaLimit ? 'VIOLATED' : hoursElapsed > (slaLimit * 0.75) ? 'AT_RISK' : 'PENDING',
+        hoursElapsed,
+        slaLimit,
+        hoursOverdue: Math.max(0, hoursElapsed - slaLimit),
+        message: `No response for ${hoursElapsed.toFixed(1)} hours since assignment (SLA: ${slaLimit} hours)`
+      };
+    }
+    
+    const hoursToResponse = this.getBusinessHoursBetween(assignedDate, firstResponseDate);
     
     return {
       status: hoursToResponse <= slaLimit ? 'COMPLIANT' : 'VIOLATED',
       hoursElapsed: hoursToResponse,
       slaLimit,
       hoursOverdue: Math.max(0, hoursToResponse - slaLimit),
-      message: `First response in ${hoursToResponse.toFixed(1)} hours (SLA: ${slaLimit} hours)`
+      message: `First response in ${hoursToResponse.toFixed(1)} hours after assignment (SLA: ${slaLimit} hours)`
     };
   }
 
@@ -166,19 +161,19 @@ class TicketSLAPolicy {
    */
   checkFollowUpSLA(lastUserResponseDate, lastTechResponseDate, hasUserResponse = false) {
     const now = new Date();
-    const slaLimit = hasUserResponse ? this.slaRules.followUpAfterUser : this.slaRules.followUpNoUser;
+    const slaLimit = hasUserResponse ? this.slaRules.userFollowUp : this.slaRules.techFollowUp;
     const referenceDate = hasUserResponse ? lastUserResponseDate : lastTechResponseDate;
     
     if (!referenceDate) return null;
     
-    const hoursElapsed = (now - referenceDate) / (1000 * 60 * 60);
+    const hoursElapsed = this.getBusinessHoursBetween(referenceDate, now);
     
     return {
       status: hoursElapsed > slaLimit ? 'VIOLATED' : hoursElapsed > (slaLimit * 0.8) ? 'AT_RISK' : 'COMPLIANT',
       hoursElapsed,
       slaLimit,
       hoursOverdue: Math.max(0, hoursElapsed - slaLimit),
-      message: `${hoursElapsed.toFixed(1)} hours since ${hasUserResponse ? 'user response' : 'tech response'} (SLA: ${slaLimit} hours)`,
+      message: `${hoursElapsed.toFixed(1)} business hours since ${hasUserResponse ? 'user response' : 'tech response'} (SLA: ${slaLimit} hours)`,
       type: hasUserResponse ? 'AFTER_USER' : 'NO_USER_RESPONSE'
     };
   }
@@ -193,13 +188,12 @@ class TicketSLAPolicy {
     const assignedDate = ticket.Tech_Assigned_Clean ? this.estimateAssignmentDate(ticket) : null;
     const firstResponseDate = this.getFirstTechResponseDate(ticket);
     const { lastUserResponse, lastTechResponse, hasUserResponseAfterTech } = this.parseResponseHistory(ticket);
-    const priority = ticket.Priority || 'Normal';
     
     return {
       ticketId: ticket.IssueID,
       created: createdDate,
-      assignment: this.checkAssignmentSLA(createdDate, assignedDate, priority),
-      firstResponse: this.checkFirstResponseSLA(createdDate, firstResponseDate, priority),
+      assignment: this.checkAssignmentSLA(createdDate, assignedDate),
+      firstResponse: this.checkFirstResponseSLA(assignedDate, firstResponseDate),
       followUp: this.checkFollowUpSLA(lastUserResponse, lastTechResponse, hasUserResponseAfterTech),
       overallRisk: this.calculateOverallRisk(ticket),
       recommendedAction: this.getRecommendedAction(ticket)

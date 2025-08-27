@@ -196,34 +196,34 @@ class EmailDispatcher {
     <!DOCTYPE html>
     <html>
     <head>
-        <style>
-            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
-            .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-            .header { background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white; padding: 30px; text-align: center; }
-            .header h1 { margin: 0; font-size: 24px; font-weight: 300; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
-            .header p { margin: 10px 0 0 0; opacity: 0.9; color: white; }
-            .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0; }
-            .summary-card { padding: 25px; text-align: center; border-bottom: 1px solid #e1e5e9; }
-            .summary-card:nth-child(even) { background: #f8f9fa; }
-            .summary-value { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
-            .summary-label { font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
-            .section { padding: 30px; border-bottom: 1px solid #e1e5e9; }
-            .section h2 { color: #2c3e50; margin-top: 0; font-size: 18px; }
-            .priority-high { color: #dc3545; font-weight: bold; }
-            .priority-medium { color: #ffc107; font-weight: bold; }
-            .priority-critical { color: #dc3545; background: #fff5f5; padding: 2px 6px; border-radius: 4px; }
-            .tech-name { font-weight: bold; color: #0066cc; }
-            .ticket-id { font-family: monospace; background: #f8f9fa; padding: 2px 6px; border-radius: 4px; }
-            .footer { padding: 20px; text-align: center; background: #f8f9fa; color: #666; font-size: 12px; }
-            ul { margin: 10px 0; padding-left: 20px; }
-            li { margin: 5px 0; line-height: 1.4; }
-            .status-tag { background: #28a745; color: white; padding: 2px 6px; border-radius: 12px; font-size: 11px; margin-left: 10px; }
-            table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-            th { background: #f8f9fa; padding: 10px; text-align: left; border-bottom: 2px solid #dee2e6; font-weight: 600; color: #495057; }
-            td { padding: 8px 10px; border-bottom: 1px solid #e9ecef; }
-            tr:hover { background: #f8f9fa; }
-            .violation-critical { background: #fff5f5; }
-            .violation-high { background: #fff8f0; }
+        <meta charset="utf-8">
+        <style type="text/css">
+            body { font-family: Arial, sans-serif !important; margin: 0; padding: 10px; background-color: #ffffff; color: #000000; }
+            .container { width: 100%; max-width: 800px; margin: 0 auto; background-color: #ffffff; border: 2px solid #000000; }
+            .header { background-color: #1e3a5f; color: #ffffff; padding: 20px; text-align: center; }
+            .header h1 { margin: 0; font-size: 24px; font-weight: bold; color: #ffffff; }
+            .header p { margin: 10px 0 0 0; color: #ffffff; font-size: 14px; }
+            .summary-table { width: 100%; border-collapse: collapse; }
+            .summary-table td { padding: 15px; text-align: center; border: 1px solid #333333; background-color: #ffffff; }
+            .summary-value { font-size: 28px; font-weight: bold; color: #000000; display: block; }
+            .summary-label { font-size: 12px; color: #333333; text-transform: uppercase; font-weight: bold; display: block; margin-top: 5px; }
+            .section { padding: 20px; border-top: 2px solid #cccccc; background-color: #ffffff; }
+            .section h2 { color: #000000; margin: 0 0 10px 0; font-size: 18px; font-weight: bold; border-bottom: 2px solid #1e3a5f; padding-bottom: 5px; }
+            .priority-high { color: #cc0000; font-weight: bold; }
+            .priority-medium { color: #ff6600; font-weight: bold; }
+            .priority-critical { color: #ffffff; background-color: #cc0000; padding: 3px 8px; font-weight: bold; display: inline-block; }
+            .tech-name { font-weight: bold; color: #0044cc; }
+            .ticket-id { font-family: 'Courier New', monospace; background-color: #eeeeee; padding: 2px 6px; border: 1px solid #666666; font-weight: bold; color: #000000; display: inline-block; }
+            .footer { padding: 15px; text-align: center; background-color: #eeeeee; color: #000000; font-size: 11px; border-top: 2px solid #000000; }
+            ul { margin: 10px 0; padding-left: 20px; color: #000000; }
+            li { margin: 8px 0; line-height: 1.5; color: #000000; }
+            .status-tag { background-color: #008800; color: #ffffff; padding: 2px 6px; font-size: 11px; margin-left: 10px; font-weight: bold; display: inline-block; }
+            table { width: 100%; border-collapse: collapse; margin: 15px 0; border: 2px solid #000000; }
+            th { background-color: #1e3a5f; padding: 10px; text-align: left; border: 1px solid #000000; font-weight: bold; color: #ffffff; }
+            td { padding: 8px 10px; border: 1px solid #666666; color: #000000; background-color: #ffffff; }
+            .violation-critical { background-color: #ffcccc !important; }
+            .violation-high { background-color: #ffe6cc !important; }
+            small { display: block; margin-top: 3px; color: #333333; }
         </style>
     </head>
     <body>
@@ -233,27 +233,26 @@ class EmailDispatcher {
                 <p>${new Date().toLocaleDateString()} • ${new Date().toLocaleTimeString()}</p>
             </div>
             
-            <div class="summary-grid">
-                <div class="summary-card">
-                    <div class="summary-value">${summary.totalOpen}</div>
-                    <div class="summary-label">Total Open Tickets</div>
-                </div>
-                
-                <div class="summary-card">
-                    <div class="summary-value priority-critical">${summary.criticalActions}</div>
-                    <div class="summary-label">Critical Actions Needed</div>
-                </div>
-                
-                <div class="summary-card">
-                    <div class="summary-value priority-high">${summary.slaRisks}</div>
-                    <div class="summary-label">SLA Risk Tickets</div>
-                </div>
-                
-                <div class="summary-card">
-                    <div class="summary-value ${summary.teamIssues > 0 ? 'priority-medium' : ''}">${summary.teamIssues}</div>
-                    <div class="summary-label">Team Coaching Needed</div>
-                </div>
-            </div>
+            <table class="summary-table" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 20px;">
+                <tr>
+                    <td style="padding: 15px; text-align: center; border: 1px solid #333333; background-color: #ffffff;">
+                        <span class="summary-value">${summary.totalOpen}</span>
+                        <span class="summary-label">Total Open Tickets</span>
+                    </td>
+                    <td style="padding: 15px; text-align: center; border: 1px solid #333333; background-color: #f0f0f0;">
+                        <span class="summary-value" style="color: #cc0000;">${summary.criticalActions}</span>
+                        <span class="summary-label">Critical Actions</span>
+                    </td>
+                    <td style="padding: 15px; text-align: center; border: 1px solid #333333; background-color: #ffffff;">
+                        <span class="summary-value" style="color: #ff6600;">${summary.slaRisks}</span>
+                        <span class="summary-label">SLA Risks</span>
+                    </td>
+                    <td style="padding: 15px; text-align: center; border: 1px solid #333333; background-color: #f0f0f0;">
+                        <span class="summary-value" style="${summary.teamIssues > 0 ? 'color: #ff6600;' : ''}">${summary.teamIssues}</span>
+                        <span class="summary-label">Team Coaching</span>
+                    </td>
+                </tr>
+            </table>
             
             ${analysis.daily_priorities && analysis.daily_priorities.length > 0 ? `
             <div class="section">

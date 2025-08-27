@@ -66,9 +66,9 @@ app.http('triggerSupervisorDashboard', {
     }
 });
 
-// Daily Supervisor Dashboard Timer - Runs at 7:30 AM EST every day
+// Daily Supervisor Dashboard Timer - Runs at 7:30 AM Eastern Time every day
 app.timer('dailySupervisorDashboard', {
-    schedule: '0 30 12 * * *', // 12:30 UTC = 7:30 AM EST (standard time) / 11:30 UTC = 7:30 AM EDT (daylight time)
+    schedule: '0 30 11 * * *', // 11:30 UTC = 7:30 AM EDT (daylight time) / 12:30 UTC = 7:30 AM EST (standard time)
     handler: async (myTimer, context) => {
         context.log('⏰ Daily supervisor dashboard timer triggered at:', new Date().toISOString());
         

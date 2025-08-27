@@ -1,0 +1,159 @@
+/* Outlook-friendly CSS for email templates */
+/* High contrast, no gradients, explicit colors */
+
+body { 
+    font-family: Arial, Helvetica, sans-serif; 
+    margin: 0; 
+    padding: 10px; 
+    background-color: #ffffff; 
+    color: #000000; 
+}
+
+.container { 
+    max-width: 800px; 
+    margin: 0 auto; 
+    background-color: #ffffff; 
+    border: 2px solid #000000; 
+}
+
+.header { 
+    background-color: #1e3a5f; 
+    color: #ffffff; 
+    padding: 20px; 
+    text-align: center; 
+}
+
+.header h1 { 
+    margin: 0; 
+    font-size: 24px; 
+    font-weight: bold; 
+    color: #ffffff; 
+}
+
+.header p { 
+    margin: 10px 0 0 0; 
+    color: #ffffff; 
+    font-size: 14px; 
+}
+
+.summary-grid { 
+    width: 100%; 
+}
+
+.summary-card { 
+    padding: 15px; 
+    text-align: center; 
+    border: 1px solid #333333; 
+    background-color: #ffffff; 
+}
+
+.summary-value { 
+    font-size: 28px; 
+    font-weight: bold; 
+    color: #000000; 
+}
+
+.summary-label { 
+    font-size: 12px; 
+    color: #333333; 
+    text-transform: uppercase; 
+    font-weight: bold; 
+}
+
+.section { 
+    padding: 20px; 
+    border-top: 2px solid #cccccc; 
+    background-color: #ffffff; 
+}
+
+.section h2 { 
+    color: #000000; 
+    margin-top: 0; 
+    font-size: 18px; 
+    font-weight: bold; 
+    border-bottom: 2px solid #1e3a5f; 
+    padding-bottom: 5px; 
+}
+
+/* Priority color coding with high contrast */
+.priority-critical { 
+    color: #ffffff; 
+    background-color: #cc0000; 
+    padding: 3px 8px; 
+    font-weight: bold; 
+}
+
+.priority-high { 
+    color: #cc0000; 
+    font-weight: bold; 
+}
+
+.priority-medium { 
+    color: #ff6600; 
+    font-weight: bold; 
+}
+
+.priority-low { 
+    color: #006600; 
+    font-weight: bold; 
+}
+
+/* Other elements */
+.tech-name { 
+    font-weight: bold; 
+    color: #0044cc; 
+    text-decoration: underline; 
+}
+
+.ticket-id { 
+    font-family: Courier New, monospace; 
+    background-color: #eeeeee; 
+    padding: 2px 6px; 
+    border: 1px solid #666666; 
+    font-weight: bold; 
+    color: #000000;
+}
+
+ul { 
+    margin: 10px 0; 
+    padding-left: 20px; 
+    color: #000000; 
+}
+
+li { 
+    margin: 8px 0; 
+    line-height: 1.5; 
+    color: #000000; 
+}
+
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin: 15px 0; 
+    border: 2px solid #000000; 
+}
+
+th { 
+    background-color: #1e3a5f; 
+    padding: 10px; 
+    text-align: left; 
+    border: 1px solid #000000; 
+    font-weight: bold; 
+    color: #ffffff; 
+}
+
+td { 
+    padding: 8px 10px; 
+    border: 1px solid #666666; 
+    color: #000000; 
+    background-color: #ffffff;
+}
+
+.footer { 
+    padding: 15px; 
+    text-align: center; 
+    background-color: #eeeeee; 
+    color: #000000; 
+    font-size: 11px; 
+    border-top: 2px solid #000000; 
+}
