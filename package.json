@@ -9,7 +9,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@azure/functions": "^4.0.0",
+    "@azure/functions": "^4.7.2-preview",
     "@azure/identity": "^4.0.1",
     "@azure/msal-node": "^2.13.0",
     "@microsoft/microsoft-graph-client": "^3.0.7",
@@ -27,5 +27,16 @@
     "ai"
   ],
   "author": "Jeff Houchin",
-  "license": "MIT"
+  "license": "MIT",
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeffhouchin/helpdesk-ticketing-report.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jeffhouchin/helpdesk-ticketing-report/issues"
+  },
+  "homepage": "https://github.com/jeffhouchin/helpdesk-ticketing-report#readme"
 }

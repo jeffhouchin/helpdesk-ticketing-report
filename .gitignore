@@ -38,7 +38,7 @@ node_modules/
 .env
 
 # IDE files
-.vscode/
+
 .idea/
 *.swp
 *.swo
@@ -66,3 +66,35 @@ out/
 # Config files with sensitive data
 config.json
 secrets.json
+
+# Azure Functions
+local.settings.json
+.funcignore
+*.zip
+deployment*.zip
+
+# Data files
+data/
+*.csv
+Ticket_Data_*.csv
+
+# Test files
+test-*.js
+*-test.js
+test-results.json
+
+# Installation files
+*.msi
+AzureCLI.msi
+
+# Claude/IDE specific
+.claude/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs and debugging
+debug-*.js
+manual-function-code.js

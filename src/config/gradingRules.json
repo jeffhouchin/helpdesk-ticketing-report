@@ -1,0 +1,207 @@
+{
+  "business_hours": {
+    "timezone": "America/New_York",
+    "monday_friday": {
+      "start": "08:30",
+      "end": "17:30",
+      "description": "M-F 8:30 AM - 5:30 PM EST/EDT"
+    },
+    "saturday_sunday": {
+      "start": "08:30", 
+      "end": "16:00",
+      "description": "Sat-Sun 8:30 AM - 4:00 PM EST/EDT"
+    },
+    "note": "All times in Eastern Time. Time stops counting outside business hours"
+  },
+  "sla_requirements": {
+    "first_assignment": {
+      "critical": 1,
+      "high": 2,
+      "normal": 4,
+      "low": 8,
+      "unit": "business_hours"
+    },
+    "first_response": {
+      "critical": 1,
+      "high": 2, 
+      "normal": 4,
+      "low": 8,
+      "unit": "business_hours"
+    },
+    "user_follow_up_response": {
+      "all_priorities": 4,
+      "unit": "business_hours",
+      "description": "Must respond within 4 business hours after user follows up"
+    },
+    "resolution": {
+      "critical": 8,
+      "high": 16,
+      "normal": 24,
+      "low": 40,
+      "unit": "business_hours"
+    }
+  },
+  "grading_criteria": {
+    "response_time": {
+      "weight": 25,
+      "business_hours_only": true,
+      "thresholds": {
+        "excellent": {
+          "business_hours": 1,
+          "points": 25,
+          "feedback": "Excellent response time - responded within 1 business hour"
+        },
+        "good": {
+          "business_hours": 2,
+          "points": 20,
+          "feedback": "Good response time - responded within 2 business hours"
+        },
+        "acceptable": {
+          "business_hours": 4,
+          "points": 15,
+          "feedback": "Acceptable response time - responded within SLA"
+        },
+        "needs_improvement": {
+          "business_hours": 8,
+          "points": 10,
+          "feedback": "Response time needs improvement - approaching SLA violation"
+        },
+        "poor": {
+          "business_hours": 16,
+          "points": 5,
+          "feedback": "Poor response time - SLA violated"
+        },
+        "unacceptable": {
+          "business_hours": 999999,
+          "points": 0,
+          "feedback": "No response - severe SLA violation"
+        }
+      }
+    },
+    "communication_quality": {
+      "weight": 20,
+      "evaluation_points": [
+        "greeting_present",
+        "professional_tone",
+        "clear_next_steps",
+        "empathy_shown",
+        "solution_explained"
+      ],
+      "feedback_templates": {
+        "excellent": "Communication is clear, professional, and empathetic",
+        "good": "Good communication with minor areas for improvement",
+        "needs_work": "Communication lacks clarity or professionalism"
+      }
+    },
+    "technical_resolution": {
+      "weight": 30,
+      "aspects": {
+        "problem_identified": {
+          "points": 10,
+          "feedback": "Correctly identified the root cause"
+        },
+        "solution_provided": {
+          "points": 10,
+          "feedback": "Provided appropriate solution"
+        },
+        "follow_up_planned": {
+          "points": 5,
+          "feedback": "Scheduled appropriate follow-up"
+        },
+        "documentation_complete": {
+          "points": 5,
+          "feedback": "Properly documented the issue and resolution"
+        }
+      }
+    },
+    "customer_service": {
+      "weight": 15,
+      "evaluation_points": {
+        "patience": "Demonstrated patience with customer",
+        "ownership": "Took ownership of the issue",
+        "proactive": "Proactively offered additional help",
+        "education": "Educated customer to prevent future issues"
+      }
+    },
+    "efficiency": {
+      "weight": 10,
+      "metrics": {
+        "single_touch_resolution": {
+          "points": 10,
+          "feedback": "Resolved in single interaction - excellent efficiency"
+        },
+        "minimal_escalation": {
+          "points": 7,
+          "feedback": "Handled with minimal escalation"
+        },
+        "appropriate_escalation": {
+          "points": 5,
+          "feedback": "Appropriately escalated when needed"
+        }
+      }
+    }
+  },
+  "training_messages": {
+    "grade_A": {
+      "subject": "🌟 Excellent Ticket Handling!",
+      "intro": "Great job on this ticket! Here's what you did well:"
+    },
+    "grade_B": {
+      "subject": "👍 Good Ticket Handling",
+      "intro": "Nice work on this ticket. You're doing well with some areas to polish:"
+    },
+    "grade_C": {
+      "subject": "📚 Ticket Review - Learning Opportunity",
+      "intro": "This ticket has some good elements and some areas for improvement:"
+    },
+    "grade_D": {
+      "subject": "⚠️ Ticket Review - Needs Improvement",
+      "intro": "This ticket needs attention in several areas. Let's review:"
+    },
+    "grade_F": {
+      "subject": "🚨 Urgent: Ticket Handling Review Required",
+      "intro": "This ticket requires immediate improvement. Please review carefully:"
+    }
+  },
+  "best_practices": [
+    "Always acknowledge the customer within 1 hour during business hours",
+    "Use the customer's name when addressing them",
+    "Summarize the issue to confirm understanding",
+    "Provide clear timeline expectations",
+    "Document all troubleshooting steps",
+    "Follow up even after resolution to ensure satisfaction",
+    "Educate customers on self-service options when appropriate",
+    "Escalate promptly when beyond your expertise",
+    "Keep tickets updated at least daily",
+    "Close tickets only after customer confirmation"
+  ],
+  "common_mistakes": [
+    "Leaving tickets unassigned for extended periods",
+    "Not responding to customer follow-ups",
+    "Closing tickets without customer confirmation",
+    "Using technical jargon without explanation",
+    "Not documenting resolution steps",
+    "Forgetting to set proper expectations",
+    "Not showing empathy for customer frustration",
+    "Delayed escalation when needed",
+    "Incomplete problem diagnosis",
+    "Not offering preventive solutions"
+  ],
+  "special_considerations": {
+    "vip_customers": {
+      "keywords": ["director", "vp", "president", "executive", "ceo", "cfo", "cto"],
+      "additional_points": -10,
+      "feedback": "VIP customer - requires white glove service"
+    },
+    "repeat_issues": {
+      "threshold_days": 30,
+      "additional_points": -5,
+      "feedback": "Repeat issue - consider permanent solution"
+    },
+    "security_incidents": {
+      "keywords": ["breach", "hacked", "virus", "ransomware", "phishing"],
+      "additional_points": -15,
+      "feedback": "Security issue - requires immediate escalation and documentation"
+    }
+  }
+}

@@ -4,26 +4,46 @@
 class TicketSLAPolicy {
   constructor() {
     this.businessHours = {
-      weekday: { start: 8, end: 17.5 }, // 8 AM to 5:30 PM
-      weekend: { start: 8, end: 16 }    // 8 AM to 4:00 PM
+      weekday: { start: 8.5, end: 17.5 }, // 8:30 AM to 5:30 PM
+      weekend: { start: 8.5, end: 16 }    // 8:30 AM to 4:00 PM
     };
     
     this.slaRules = {
       assignment: {
-        weekday: 1,  // 1 business hour
-        weekend: 2   // 2 business hours
+        critical: 1,   // 1 business hour
+        high: 2,       // 2 business hours
+        normal: 4,     // 4 business hours
+        low: 8         // 8 business hours
       },
       firstResponse: {
-        weekday: 3,  // 3 business hours
-        weekend: 3   // 3 business hours
+        critical: 1,   // 1 business hour
+        high: 2,       // 2 business hours
+        normal: 4,     // 4 business hours
+        low: 8         // 8 business hours
       },
-      followUpAfterUser: 48,      // 48 hours after user response
-      followUpNoUser: 72          // 72 hours (3 business days) if no user response
+      userFollowUp: 4,             // 4 business hours after user responds
+      resolution: {
+        critical: 8,   // 8 business hours (1 day)
+        high: 16,      // 16 business hours (2 days)
+        normal: 24,    // 24 business hours (3 days)
+        low: 40        // 40 business hours (5 days)
+      }
     };
   }
 
   /**
-   * Calculate business hours between two dates
+   * Convert date to EST/EDT
+   * @param {Date} date 
+   * @returns {Date} Date in EST/EDT
+   */
+  toEasternTime(date) {
+    // Create date string in Eastern Time
+    const easternTime = new Date(date.toLocaleString("en-US", {timeZone: "America/New_York"}));
+    return easternTime;
+  }
+
+  /**
+   * Calculate business hours between two dates in EST/EDT
    * @param {Date} startDate 
    * @param {Date} endDate 
    * @returns {number} Business hours elapsed
@@ -31,24 +51,28 @@ class TicketSLAPolicy {
   getBusinessHoursBetween(startDate, endDate) {
     if (startDate >= endDate) return 0;
     
-    let totalHours = 0;
-    let currentDate = new Date(startDate);
+    // Convert to Eastern Time
+    const estStart = this.toEasternTime(startDate);
+    const estEnd = this.toEasternTime(endDate);
     
-    while (currentDate < endDate) {
+    let totalHours = 0;
+    let currentDate = new Date(estStart);
+    
+    while (currentDate < estEnd) {
       const dayOfWeek = currentDate.getDay(); // 0 = Sunday, 6 = Saturday
       const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
       const hours = isWeekend ? this.businessHours.weekend : this.businessHours.weekday;
       
       const dayStart = new Date(currentDate);
-      dayStart.setHours(hours.start, 0, 0, 0);
+      dayStart.setHours(Math.floor(hours.start), (hours.start % 1) * 60, 0, 0);
       
       const dayEnd = new Date(currentDate);
       dayEnd.setHours(Math.floor(hours.end), (hours.end % 1) * 60, 0, 0);
       
       // If both times are within this day's business hours
-      if (startDate <= dayEnd && endDate >= dayStart) {
-        const effectiveStart = startDate > dayStart ? startDate : dayStart;
-        const effectiveEnd = endDate < dayEnd ? endDate : dayEnd;
+      if (estStart <= dayEnd && estEnd >= dayStart) {
+        const effectiveStart = estStart > dayStart ? estStart : dayStart;
+        const effectiveEnd = estEnd < dayEnd ? estEnd : dayEnd;
         
         if (effectiveStart < effectiveEnd) {
           totalHours += (effectiveEnd - effectiveStart) / (1000 * 60 * 60);

@@ -13,14 +13,14 @@ class SupervisorDashboardService {
     console.log('📊 Generating actionable supervisor dashboard...');
     console.log(`🔍 Input data: ${ticketData.openTickets?.length || 0} open tickets, ${ticketData.noResponseAlerts?.length || 0} no-response alerts, ${ticketData.stuckTickets?.length || 0} stuck tickets`);
     
-    // Generate comprehensive analysis with AI and static components
+    // Generate comprehensive analysis with automated and static components
     const analysis = {
       immediate_sla_violations: this.findSLAViolations(ticketData.openTickets),
       no_tech_response_3days: this.findNoTechResponse3Days(ticketData),
       aging_buckets: this.createAgingBuckets(ticketData.openTickets),
       immediate_triage: this.findImmediateTriage(ticketData.openTickets),
       vip_alerts: this.findVIPTickets(ticketData.openTickets),
-      ai_quick_wins: await this.findAIQuickWins(ticketData.openTickets),
+      quick_wins: await this.findQuickWins(ticketData.openTickets),
       closure_candidates: this.findClosureCandidates(ticketData.openTickets),
       tech_performance: this.analyzeTechPerformance(ticketData.openTickets)
     };
@@ -174,7 +174,7 @@ class SupervisorDashboardService {
     return vipTickets.slice(0, 10);
   }
 
-  async findAIQuickWins(openTickets) {
+  async findQuickWins(openTickets) {
     const quickWinCandidates = openTickets.filter(ticket => {
       const subject = (ticket.Subject || '').toLowerCase();
       const body = (ticket.Ticket_Body || '').toLowerCase();
@@ -193,11 +193,11 @@ class SupervisorDashboardService {
     if (quickWinCandidates.length === 0) return [];
     
     try {
-      const aiPrompt = this.buildQuickWinsPrompt(quickWinCandidates);
-      const aiResponse = await this.aiService.analyzeWithCheapModel(aiPrompt);
-      return this.parseQuickWinsResponse(aiResponse);
+      const prompt = this.buildQuickWinsPrompt(quickWinCandidates);
+      const response = await this.aiService.analyzeWithCheapModel(prompt);
+      return this.parseQuickWinsResponse(response);
     } catch (error) {
-      console.log('AI quick wins analysis failed, using keyword fallback');
+      console.log('Quick wins analysis failed, using keyword fallback');
       return this.createKeywordQuickWins(quickWinCandidates);
     }
   }
@@ -522,11 +522,11 @@ Return JSON array of quick win ticket IDs with reasons:
 [{"ticketId": "123", "reason": "Simple password reset", "estimatedMinutes": 15}]`;
   }
 
-  parseQuickWinsResponse(aiResponse) {
+  parseQuickWinsResponse(response) {
     try {
-      return JSON.parse(aiResponse);
+      return JSON.parse(response);
     } catch (error) {
-      console.log('Failed to parse AI quick wins response');
+      console.log('Failed to parse quick wins response');
       return [];
     }
   }
@@ -557,7 +557,7 @@ Return JSON array of quick win ticket IDs with reasons:
         criticalAging: criticalAging,
         immediateTriage: immediateTriage,
         vipAlerts: vipCount,
-        quickWins: analysis.ai_quick_wins?.length || 0,
+        quickWins: analysis.quick_wins?.length || 0,
         closureCandidates: analysis.closure_candidates?.length || 0
       },
       sections: {
@@ -566,7 +566,7 @@ Return JSON array of quick win ticket IDs with reasons:
         aging_analysis: analysis.aging_buckets,
         immediate_triage: analysis.immediate_triage,
         vip_alerts: analysis.vip_alerts,
-        quick_wins: analysis.ai_quick_wins,
+        quick_wins: analysis.quick_wins,
         closure_candidates: analysis.closure_candidates,
         tech_performance: analysis.tech_performance
       },
