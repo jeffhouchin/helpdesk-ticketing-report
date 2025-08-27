@@ -228,9 +228,10 @@ class EmailDispatcher {
     </head>
     <body>
         <div class="container">
-            <div class="header">
+            <div class="header" id="top">
                 <h1>📋 Daily Helpdesk Supervisor Dashboard</h1>
                 <p>${new Date().toLocaleDateString()} • ${new Date().toLocaleTimeString()}</p>
+                <p style="margin-top: 10px; font-size: 12px; color: #ffffff;">Click any metric below to jump directly to that section</p>
             </div>
             
             <table class="summary-table" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 20px;">
@@ -239,23 +240,29 @@ class EmailDispatcher {
                         <span class="summary-value">${summary.totalOpen}</span>
                         <span class="summary-label">Total Open Tickets</span>
                     </td>
-                    <td style="padding: 15px; text-align: center; border: 1px solid #333333; background-color: #f0f0f0;">
-                        <span class="summary-value" style="color: #cc0000;">${summary.criticalActions}</span>
-                        <span class="summary-label">Critical Actions</span>
+                    <td style="padding: 0; border: 1px solid #333333; background-color: #f0f0f0;">
+                        <a href="#priorities" style="display: block; padding: 15px; text-align: center; text-decoration: none; color: inherit;">
+                            <span class="summary-value" style="color: #cc0000; display: block;">${summary.criticalActions}</span>
+                            <span class="summary-label" style="color: #333333; display: block;">Critical Actions ↓</span>
+                        </a>
                     </td>
-                    <td style="padding: 15px; text-align: center; border: 1px solid #333333; background-color: #ffffff;">
-                        <span class="summary-value" style="color: #ff6600;">${summary.slaRisks}</span>
-                        <span class="summary-label">SLA Risks</span>
+                    <td style="padding: 0; border: 1px solid #333333; background-color: #ffffff;">
+                        <a href="#sla-risks" style="display: block; padding: 15px; text-align: center; text-decoration: none; color: inherit;">
+                            <span class="summary-value" style="color: #ff6600; display: block;">${summary.slaRisks}</span>
+                            <span class="summary-label" style="color: #333333; display: block;">SLA Risks ↓</span>
+                        </a>
                     </td>
-                    <td style="padding: 15px; text-align: center; border: 1px solid #333333; background-color: #f0f0f0;">
-                        <span class="summary-value" style="${summary.teamIssues > 0 ? 'color: #ff6600;' : ''}">${summary.teamIssues}</span>
-                        <span class="summary-label">Team Coaching</span>
+                    <td style="padding: 0; border: 1px solid #333333; background-color: #f0f0f0;">
+                        <a href="#team-coaching" style="display: block; padding: 15px; text-align: center; text-decoration: none; color: inherit;">
+                            <span class="summary-value" style="${summary.teamIssues > 0 ? 'color: #ff6600;' : 'color: #000000;'} display: block;">${summary.teamIssues}</span>
+                            <span class="summary-label" style="color: #333333; display: block;">Team Coaching ↓</span>
+                        </a>
                     </td>
                 </tr>
             </table>
             
             ${analysis.daily_priorities && analysis.daily_priorities.length > 0 ? `
-            <div class="section">
+            <div class="section" id="priorities">
                 <h2>🎯 Immediate Action Items (Priority Order)</h2>
                 <ul>
                 ${analysis.daily_priorities.map(item => `
@@ -272,7 +279,7 @@ class EmailDispatcher {
             ` : ''}
             
             ${analysis.sla_risks && analysis.sla_risks.length > 0 ? `
-            <div class="section">
+            <div class="section" id="sla-risks">
                 <h2>⚠️ SLA Risk Assessment</h2>
                 <ul>
                 ${analysis.sla_risks.map(risk => `
@@ -288,7 +295,7 @@ class EmailDispatcher {
             ` : ''}
             
             ${analysis.team_coaching && analysis.team_coaching.length > 0 ? `
-            <div class="section">
+            <div class="section" id="team-coaching">
                 <h2>👥 Team Coaching Opportunities</h2>
                 <ul>
                 ${analysis.team_coaching.map(coaching => `
@@ -391,9 +398,10 @@ class EmailDispatcher {
     </head>
     <body>
         <div class="container">
-            <div class="header">
+            <div class="header" id="top">
                 <h1>⚡ Actionable Supervisor Dashboard</h1>
                 <p>${new Date().toLocaleDateString('en-US', {timeZone: 'America/New_York'})} • ${new Date().toLocaleTimeString('en-US', {timeZone: 'America/New_York'})} EST</p>
+                <p style="margin-top: 10px; font-size: 12px;">Click any metric below to jump to that section</p>
             </div>
             
             <table class="summary-table" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 20px;">
@@ -402,41 +410,55 @@ class EmailDispatcher {
                         <span class="summary-value">${summary.totalOpen}</span>
                         <span class="summary-label">Total Open</span>
                     </td>
-                    <td style="padding: 15px; text-align: center; border: 1px solid #333333; background-color: #ffcccc;">
-                        <span class="summary-value" style="color: #cc0000; font-weight: bold;">${summary.slaViolations}</span>
-                        <span class="summary-label">SLA Violations</span>
+                    <td style="padding: 0; border: 1px solid #333333; background-color: #ffcccc;">
+                        <a href="#sla-violations" style="display: block; padding: 15px; text-align: center; text-decoration: none; color: inherit;">
+                            <span class="summary-value" style="color: #cc0000; font-weight: bold; display: block;">${summary.slaViolations}</span>
+                            <span class="summary-label" style="color: #333333; display: block;">SLA Violations ↓</span>
+                        </a>
                     </td>
-                    <td style="padding: 15px; text-align: center; border: 1px solid #333333; background-color: ${summary.noTechResponse3Days > 50 ? '#ffcccc' : summary.noTechResponse3Days > 20 ? '#ffe6cc' : '#ffffff'};">
-                        <span class="summary-value" style="color: ${summary.noTechResponse3Days > 50 ? '#cc0000' : summary.noTechResponse3Days > 20 ? '#cc0000' : '#ff6600'};">${summary.noTechResponse3Days}</span>
-                        <span class="summary-label">No Response 3+ Days</span>
+                    <td style="padding: 0; border: 1px solid #333333; background-color: ${summary.noTechResponse3Days > 50 ? '#ffcccc' : summary.noTechResponse3Days > 20 ? '#ffe6cc' : '#ffffff'};">
+                        <a href="#no-response" style="display: block; padding: 15px; text-align: center; text-decoration: none; color: inherit;">
+                            <span class="summary-value" style="color: ${summary.noTechResponse3Days > 50 ? '#cc0000' : summary.noTechResponse3Days > 20 ? '#cc0000' : '#ff6600'}; display: block;">${summary.noTechResponse3Days}</span>
+                            <span class="summary-label" style="color: #333333; display: block;">No Response 3+ Days ↓</span>
+                        </a>
                     </td>
-                    <td style="padding: 15px; text-align: center; border: 1px solid #333333; background-color: ${summary.criticalAging > 20 ? '#ffcccc' : summary.criticalAging > 10 ? '#ffe6cc' : '#ffffff'};">
-                        <span class="summary-value" style="color: ${summary.criticalAging > 20 ? '#cc0000' : summary.criticalAging > 10 ? '#cc0000' : '#000000'};">${summary.criticalAging}</span>
-                        <span class="summary-label">Critical Aging</span>
+                    <td style="padding: 0; border: 1px solid #333333; background-color: ${summary.criticalAging > 20 ? '#ffcccc' : summary.criticalAging > 10 ? '#ffe6cc' : '#ffffff'};">
+                        <a href="#aging" style="display: block; padding: 15px; text-align: center; text-decoration: none; color: inherit;">
+                            <span class="summary-value" style="color: ${summary.criticalAging > 20 ? '#cc0000' : summary.criticalAging > 10 ? '#cc0000' : '#000000'}; display: block;">${summary.criticalAging}</span>
+                            <span class="summary-label" style="color: #333333; display: block;">Critical Aging ↓</span>
+                        </a>
                     </td>
                 </tr>
                 <tr>
-                    <td style="padding: 15px; text-align: center; border: 1px solid #333333; background-color: ${summary.immediateTriage > 0 ? '#ffe6cc' : '#ffffff'};">
-                        <span class="summary-value" style="color: ${summary.immediateTriage > 0 ? '#cc0000' : '#000000'};">${summary.immediateTriage}</span>
-                        <span class="summary-label">Immediate Triage</span>
+                    <td style="padding: 0; border: 1px solid #333333; background-color: ${summary.immediateTriage > 0 ? '#ffe6cc' : '#ffffff'};">
+                        <a href="#triage" style="display: block; padding: 15px; text-align: center; text-decoration: none; color: inherit;">
+                            <span class="summary-value" style="color: ${summary.immediateTriage > 0 ? '#cc0000' : '#000000'}; display: block;">${summary.immediateTriage}</span>
+                            <span class="summary-label" style="color: #333333; display: block;">Immediate Triage ↓</span>
+                        </a>
                     </td>
-                    <td style="padding: 15px; text-align: center; border: 1px solid #333333; background-color: ${summary.vipAlerts > 0 ? '#ffcccc' : '#ffffff'};">
-                        <span class="summary-value" style="color: ${summary.vipAlerts > 0 ? '#cc0000' : '#000000'}; font-weight: bold;">${summary.vipAlerts}</span>
-                        <span class="summary-label">VIP Alerts</span>
+                    <td style="padding: 0; border: 1px solid #333333; background-color: ${summary.vipAlerts > 0 ? '#ffcccc' : '#ffffff'};">
+                        <a href="#vip" style="display: block; padding: 15px; text-align: center; text-decoration: none; color: inherit;">
+                            <span class="summary-value" style="color: ${summary.vipAlerts > 0 ? '#cc0000' : '#000000'}; font-weight: bold; display: block;">${summary.vipAlerts}</span>
+                            <span class="summary-label" style="color: #333333; display: block;">VIP Alerts ↓</span>
+                        </a>
                     </td>
-                    <td style="padding: 15px; text-align: center; border: 1px solid #333333; background-color: ${summary.quickWins > 0 ? '#e6ffe6' : '#ffffff'};">
-                        <span class="summary-value" style="color: ${summary.quickWins > 0 ? '#006600' : '#000000'};">${summary.quickWins}</span>
-                        <span class="summary-label">Quick Wins</span>
+                    <td style="padding: 0; border: 1px solid #333333; background-color: ${summary.quickWins > 0 ? '#e6ffe6' : '#ffffff'};">
+                        <a href="#quickwins" style="display: block; padding: 15px; text-align: center; text-decoration: none; color: inherit;">
+                            <span class="summary-value" style="color: ${summary.quickWins > 0 ? '#006600' : '#000000'}; display: block;">${summary.quickWins}</span>
+                            <span class="summary-label" style="color: #333333; display: block;">Quick Wins ↓</span>
+                        </a>
                     </td>
-                    <td style="padding: 15px; text-align: center; border: 1px solid #333333; background-color: #ffffff;">
-                        <span class="summary-value">${summary.closureCandidates}</span>
-                        <span class="summary-label">Ready to Close</span>
+                    <td style="padding: 0; border: 1px solid #333333; background-color: #ffffff;">
+                        <a href="#closure" style="display: block; padding: 15px; text-align: center; text-decoration: none; color: inherit;">
+                            <span class="summary-value" style="color: #000000; display: block;">${summary.closureCandidates}</span>
+                            <span class="summary-label" style="color: #333333; display: block;">Ready to Close ↓</span>
+                        </a>
                     </td>
                 </tr>
             </table>
             
             ${sections.sla_violations && sections.sla_violations.length > 0 ? `
-            <div class="section">
+            <div class="section" id="sla-violations">
                 <h2><span class="emoji">🚨</span>SLA Violations - Immediate Action Required</h2>
                 <ul>
                 ${sections.sla_violations.slice(0, 10).map(violation => `
@@ -453,7 +475,7 @@ class EmailDispatcher {
             ` : ''}
             
             ${sections.no_tech_response_3days && sections.no_tech_response_3days.length > 0 ? `
-            <div class="section">
+            <div class="section" id="no-response">
                 <h2><span class="emoji">⏰</span>3+ Days No Tech Response - Priority Follow-Up Required</h2>
                 <ul>
                 ${sections.no_tech_response_3days.slice(0, 15).map(ticket => `
@@ -472,7 +494,7 @@ class EmailDispatcher {
             ` : ''}
             
             ${sections.aging_analysis ? `
-            <div class="section">
+            <div class="section" id="aging">
                 <h2><span class="emoji">📊</span>Ticket Aging Analysis</h2>
                 <table class="aging-table" cellpadding="0" cellspacing="0" width="100%">
                     <tr>
@@ -502,7 +524,7 @@ class EmailDispatcher {
             ` : ''}
             
             ${sections.immediate_triage && sections.immediate_triage.length > 0 ? `
-            <div class="section">
+            <div class="section" id="triage">
                 <h2><span class="emoji">⚡</span>Immediate Triage - New Tickets Needing Assignment</h2>
                 <ul>
                 ${sections.immediate_triage.map(item => `
@@ -519,7 +541,7 @@ class EmailDispatcher {
             ` : ''}
             
             ${sections.vip_alerts && sections.vip_alerts.length > 0 ? `
-            <div class="section">
+            <div class="section" id="vip">
                 <h2><span class="emoji">👑</span>VIP Alerts - Executive/Director Tickets</h2>
                 <table width="100%" cellpadding="0" cellspacing="0" style="border: 2px solid #cc0000; margin-top: 15px;">
                     <tr>
@@ -559,7 +581,7 @@ class EmailDispatcher {
             ` : ''}
             
             ${sections.quick_wins && sections.quick_wins.length > 0 ? `
-            <div class="section">
+            <div class="section" id="quickwins">
                 <h2><span class="emoji">🎯</span>Quick Wins - Easy Resolutions (~${sections.quick_wins.reduce((sum, qw) => sum + (qw.estimatedMinutes || 20), 0)} min total)</h2>
                 <ul>
                 ${sections.quick_wins.map(qw => `
@@ -573,7 +595,7 @@ class EmailDispatcher {
             ` : ''}
             
             ${sections.closure_candidates && sections.closure_candidates.length > 0 ? `
-            <div class="section">
+            <div class="section" id="closure">
                 <h2><span class="emoji">📋</span>Closure Candidates - Ready to Close</h2>
                 <ul>
                 ${sections.closure_candidates.map(candidate => `
@@ -589,7 +611,7 @@ class EmailDispatcher {
             ` : ''}
             
             ${sections.tech_performance && Object.keys(sections.tech_performance).length > 0 ? `
-            <div class="section">
+            <div class="section" id="tech-performance">
                 <h2><span class="emoji">👥</span>Technician Performance Summary (All Active Techs)</h2>
                 <table width="100%" cellpadding="0" cellspacing="0" style="border: 2px solid #000000; margin-top: 15px;">
                     <tr>
