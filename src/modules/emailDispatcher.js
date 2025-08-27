@@ -457,71 +457,86 @@ class EmailDispatcher {
                 </tr>
             </table>
             
+            
             ${sections.sla_violations && sections.sla_violations.length > 0 ? `
             <div class="section" id="sla-violations">
                 <h2><span class="emoji">🚨</span>SLA Violations - Immediate Action Required</h2>
-                <ul>
-                ${sections.sla_violations.slice(0, 10).map(violation => `
-                    <li>
-                        <a href="${violation.url}" class="ticket-link">#${violation.ticketId}</a> - 
-                        <span class="${violation.severity.toLowerCase()}">${violation.severity}</span>
-                        <strong>${violation.type.replace('_', ' ')}</strong>
-                        <br><small>${violation.message}</small>
-                        <br><small><strong>Action:</strong> ${violation.action.replace('_', ' ')}</small>
-                    </li>
+                <table width="100%" cellpadding="0" cellspacing="0" style="border: 2px solid #cc0000; margin-top: 15px;">
+                    <tr>
+                        <th style="background-color: #cc0000; color: #ffffff; padding: 8px; text-align: left; border: 1px solid #000000; font-weight: bold;">Ticket</th>
+                        <th style="background-color: #cc0000; color: #ffffff; padding: 8px; text-align: left; border: 1px solid #000000; font-weight: bold;">Type</th>
+                        <th style="background-color: #cc0000; color: #ffffff; padding: 8px; text-align: left; border: 1px solid #000000; font-weight: bold;">Subject</th>
+                        <th style="background-color: #cc0000; color: #ffffff; padding: 8px; text-align: left; border: 1px solid #000000; font-weight: bold;">Tech</th>
+                        <th style="background-color: #cc0000; color: #ffffff; padding: 8px; text-align: left; border: 1px solid #000000; font-weight: bold;">SLA Status</th>
+                        <th style="background-color: #cc0000; color: #ffffff; padding: 8px; text-align: center; border: 1px solid #000000; font-weight: bold;">Action Required</th>
+                    </tr>
+                ${sections.sla_violations.slice(0, 15).map((violation, index) => `
+                    <tr style="background-color: ${index % 2 === 0 ? '#ffffff' : '#f0f0f0'};">
+                        <td style="padding: 10px; border: 1px solid #666666; border-bottom: 2px solid #cccccc;">
+                            <a href="${violation.url}" style="color: #cc0000; font-weight: bold; text-decoration: underline;">#${violation.ticketId}</a>
+                        </td>
+                        <td style="padding: 10px; border: 1px solid #666666; border-bottom: 2px solid #cccccc; font-weight: bold; color: ${violation.severity === 'CRITICAL' ? '#cc0000' : '#ff6600'};">
+                            ${violation.type.replace(/_/g, ' ')}
+                        </td>
+                        <td style="padding: 8px; border: 1px solid #666666; border-bottom: 2px solid #cccccc; font-size: 11px;">
+                            ${(violation.subject || 'N/A').substring(0, 40)}${violation.subject && violation.subject.length > 40 ? '...' : ''}
+                        </td>
+                        <td style="padding: 8px; border: 1px solid #666666; border-bottom: 2px solid #cccccc; color: ${violation.assigned === 'UNASSIGNED' ? '#cc0000' : '#0044cc'}; font-weight: bold;">
+                            ${violation.assigned === 'UNASSIGNED' ? 'UNASSIGNED' : (violation.assignedUsername || violation.assigned.split('@')[0] || violation.assigned)}
+                        </td>
+                        <td style="padding: 10px; border: 1px solid #666666; border-bottom: 2px solid #cccccc; font-size: 11px;">
+                            ${violation.message}
+                        </td>
+                        <td style="padding: 10px; border: 1px solid #666666; border-bottom: 2px solid #cccccc; background-color: #ffcccc; text-align: center; font-weight: bold; color: #cc0000;">
+                            ${violation.action.replace(/_/g, ' ')}
+                        </td>
+                    </tr>
                 `).join('')}
-                </ul>
+                </table>
+                <p style="margin: 10px 0 0 0; text-align: right;"><a href="#top" style="color: #0044cc; font-size: 12px;">↑ Back to Top</a></p>
             </div>
             ` : ''}
             
             ${sections.no_tech_response_3days && sections.no_tech_response_3days.length > 0 ? `
             <div class="section" id="no-response">
                 <h2><span class="emoji">⏰</span>3+ Days No Tech Response - Priority Follow-Up Required</h2>
-                <ul>
-                ${sections.no_tech_response_3days.slice(0, 15).map(ticket => `
-                    <li>
-                        <a href="${ticket.url}" class="ticket-link">#${ticket.ticketId}</a> - 
-                        <span class="${ticket.priority.toLowerCase()}">${ticket.priority}</span>
-                        (Created ${ticket.daysSinceCreated} days ago)
-                        <br><small><strong>Subject:</strong> ${ticket.subject}</small>
-                        <br><small><strong>Assigned:</strong> <span class="tech-name">${ticket.assigned}</span></small>
-                        <br><small><strong>Last Tech Response:</strong> ${ticket.daysSinceLastTechResponse === ticket.daysSinceCreated ? 'NEVER' : `${ticket.daysSinceLastTechResponse} days ago`}</small>
-                    </li>
+                <table width="100%" cellpadding="0" cellspacing="0" style="border: 2px solid #ff6600; margin-top: 15px;">
+                    <tr>
+                        <th style="background-color: #ff6600; color: #ffffff; padding: 8px; text-align: left; border: 1px solid #000000; font-weight: bold;">Ticket</th>
+                        <th style="background-color: #ff6600; color: #ffffff; padding: 8px; text-align: left; border: 1px solid #000000; font-weight: bold;">Status</th>
+                        <th style="background-color: #ff6600; color: #ffffff; padding: 8px; text-align: left; border: 1px solid #000000; font-weight: bold;">Subject</th>
+                        <th style="background-color: #ff6600; color: #ffffff; padding: 8px; text-align: left; border: 1px solid #000000; font-weight: bold;">Tech</th>
+                        <th style="background-color: #ff6600; color: #ffffff; padding: 8px; text-align: center; border: 1px solid #000000; font-weight: bold;">Days Old</th>
+                        <th style="background-color: #ff6600; color: #ffffff; padding: 8px; text-align: center; border: 1px solid #000000; font-weight: bold;">Last Tech Response</th>
+                    </tr>
+                ${sections.no_tech_response_3days.slice(0, 20).map((ticket, index) => `
+                    <tr style="background-color: ${index % 2 === 0 ? '#ffffff' : '#fff0e6'};">
+                        <td style="padding: 8px; border: 1px solid #666666; border-bottom: 1px solid #cccccc;">
+                            <a href="${ticket.url}" style="color: #ff6600; font-weight: bold; text-decoration: underline;">#${ticket.ticketId}</a>
+                        </td>
+                        <td style="padding: 8px; border: 1px solid #666666; border-bottom: 1px solid #cccccc; font-weight: bold; color: #000000;">
+                            ${ticket.status || 'New'}
+                        </td>
+                        <td style="padding: 8px; border: 1px solid #666666; border-bottom: 1px solid #cccccc; font-size: 12px;">
+                            ${ticket.subject}
+                        </td>
+                        <td style="padding: 8px; border: 1px solid #666666; border-bottom: 1px solid #cccccc; color: ${ticket.assigned === 'UNASSIGNED' ? '#cc0000' : '#0044cc'}; font-weight: bold;">
+                            ${ticket.assigned === 'UNASSIGNED' ? 'NONE' : (ticket.assignedUsername || ticket.assigned.split('@')[0] || ticket.assigned)}
+                        </td>
+                        <td style="padding: 8px; text-align: center; border: 1px solid #666666; border-bottom: 1px solid #cccccc; color: ${ticket.daysSinceCreated > 7 ? '#cc0000' : '#000000'}; font-weight: bold;">
+                            ${ticket.daysSinceCreated}
+                        </td>
+                        <td style="padding: 8px; text-align: center; border: 1px solid #666666; border-bottom: 1px solid #cccccc; color: #cc0000; font-weight: bold;">
+                            ${ticket.daysSinceLastTechResponse === ticket.daysSinceCreated ? 'NEVER' : `${ticket.daysSinceLastTechResponse} days ago`}
+                        </td>
+                    </tr>
                 `).join('')}
-                </ul>
-                ${sections.no_tech_response_3days.length > 15 ? `<p><em>+ ${sections.no_tech_response_3days.length - 15} more tickets requiring tech response...</em></p>` : ''}
+                </table>
+                ${sections.no_tech_response_3days.length > 20 ? `<p style="margin-top: 10px; font-style: italic;">+ ${sections.no_tech_response_3days.length - 20} more tickets requiring tech response...</p>` : ''}
+                <p style="margin: 10px 0 0 0; text-align: right;"><a href="#top" style="color: #0044cc; font-size: 12px;">↑ Back to Top</a></p>
             </div>
             ` : ''}
             
-            ${sections.aging_analysis ? `
-            <div class="section" id="aging">
-                <h2><span class="emoji">📊</span>Ticket Aging Analysis</h2>
-                <table class="aging-table" cellpadding="0" cellspacing="0" width="100%">
-                    <tr>
-                        <td style="padding: 15px; text-align: center; border: 2px solid #666666; background-color: #ffffff;">
-                            <div style="font-size: 24px; font-weight: bold; color: #000000;">${sections.aging_analysis.buckets['0-3_days'].length}</div>
-                            <div style="font-size: 12px; color: #333333; font-weight: bold;">0-3 Days<br>Fresh</div>
-                        </td>
-                        <td style="padding: 15px; text-align: center; border: 2px solid #666666; background-color: #ffffff;">
-                            <div style="font-size: 24px; font-weight: bold; color: #000000;">${sections.aging_analysis.buckets['4-7_days'].length}</div>
-                            <div style="font-size: 12px; color: #333333; font-weight: bold;">4-7 Days<br>Normal</div>
-                        </td>
-                        <td style="padding: 15px; text-align: center; border: 2px solid #666666; background-color: #ffffff;">
-                            <div style="font-size: 24px; font-weight: bold; color: #000000;">${sections.aging_analysis.buckets['8-14_days'].length}</div>
-                            <div style="font-size: 12px; color: #333333; font-weight: bold;">8-14 Days<br>Watch</div>
-                        </td>
-                        <td style="padding: 15px; text-align: center; border: 2px solid #ff6600; background-color: #ffe6cc;">
-                            <div style="font-size: 24px; font-weight: bold; color: #ff6600;">${sections.aging_analysis.buckets['15-21_days'].length}</div>
-                            <div style="font-size: 12px; color: #333333; font-weight: bold;">15-21 Days<br>Manager Review</div>
-                        </td>
-                        <td style="padding: 15px; text-align: center; border: 2px solid #cc0000; background-color: #ffcccc;">
-                            <div style="font-size: 24px; font-weight: bold; color: #cc0000;">${sections.aging_analysis.buckets['22+_days'].length}</div>
-                            <div style="font-size: 12px; color: #333333; font-weight: bold;">22+ Days<br>Escalate</div>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-            ` : ''}
             
             ${sections.immediate_triage && sections.immediate_triage.length > 0 ? `
             <div class="section" id="triage">
@@ -546,32 +561,31 @@ class EmailDispatcher {
                 <table width="100%" cellpadding="0" cellspacing="0" style="border: 2px solid #cc0000; margin-top: 15px;">
                     <tr>
                         <th style="background-color: #cc0000; color: #ffffff; padding: 8px; text-align: left; border: 1px solid #000000;">Ticket</th>
-                        <th style="background-color: #cc0000; color: #ffffff; padding: 8px; text-align: left; border: 1px solid #000000;">VIP Indicator</th>
-                        <th style="background-color: #cc0000; color: #ffffff; padding: 8px; text-align: left; border: 1px solid #000000;">Submitter</th>
-                        <th style="background-color: #cc0000; color: #ffffff; padding: 8px; text-align: left; border: 1px solid #000000;">Subject</th>
-                        <th style="background-color: #cc0000; color: #ffffff; padding: 8px; text-align: center; border: 1px solid #000000;">Age</th>
-                        <th style="background-color: #cc0000; color: #ffffff; padding: 8px; text-align: left; border: 1px solid #000000;">Assigned To</th>
+                        <th style="background-color: #cc0000; color: #ffffff; padding: 6px; text-align: left; border: 1px solid #000000;">VIP</th>
+                        <th style="background-color: #cc0000; color: #ffffff; padding: 6px; text-align: left; border: 1px solid #000000;">From</th>
+                        <th style="background-color: #cc0000; color: #ffffff; padding: 6px; text-align: left; border: 1px solid #000000;">Subject</th>
+                        <th style="background-color: #cc0000; color: #ffffff; padding: 6px; text-align: center; border: 1px solid #000000;">Days</th>
+                        <th style="background-color: #cc0000; color: #ffffff; padding: 6px; text-align: left; border: 1px solid #000000;">Tech</th>
                     </tr>
                 ${sections.vip_alerts.map((vip, index) => `
                     <tr style="background-color: ${index % 2 === 0 ? '#ffcccc' : '#ffe6e6'};">
                         <td style="padding: 8px; border: 1px solid #666666;">
                             <a href="${vip.url}" style="color: #cc0000; font-weight: bold; text-decoration: underline;">#${vip.ticketId}</a>
                         </td>
-                        <td style="padding: 8px; border: 1px solid #666666; font-weight: bold; color: #cc0000;">
-                            ${vip.vipReason || 'VIP'}<br>
-                            <span style="font-size: 11px; font-weight: normal; color: #666666;">(${vip.vipTerm || 'executive'})</span>
+                        <td style="padding: 6px; border: 1px solid #666666; font-weight: bold; color: #cc0000; font-size: 11px;">
+                            ${vip.vipTerm ? vip.vipTerm.toUpperCase() : 'VIP'}
                         </td>
-                        <td style="padding: 8px; border: 1px solid #666666; color: #000000;">
-                            <strong>${vip.submitter}</strong>
+                        <td style="padding: 6px; border: 1px solid #666666; color: #000000; font-size: 11px;">
+                            <strong>${vip.submitterUsername || vip.submitter.split('@')[0] || vip.submitter}</strong>
                         </td>
-                        <td style="padding: 8px; border: 1px solid #666666; color: #000000; font-size: 12px;">
-                            ${vip.subject}
+                        <td style="padding: 6px; border: 1px solid #666666; color: #000000; font-size: 11px;">
+                            ${(vip.subject || '').substring(0, 35)}${vip.subject && vip.subject.length > 35 ? '...' : ''}
                         </td>
-                        <td style="padding: 8px; text-align: center; border: 1px solid #666666; color: ${vip.age > 3 ? '#cc0000' : '#000000'}; font-weight: bold;">
-                            ${vip.age} days
+                        <td style="padding: 6px; text-align: center; border: 1px solid #666666; color: ${vip.age > 3 ? '#cc0000' : '#000000'}; font-weight: bold;">
+                            ${vip.age}
                         </td>
-                        <td style="padding: 8px; border: 1px solid #666666; color: ${vip.assigned === 'UNASSIGNED' ? '#cc0000' : '#0044cc'}; font-weight: bold;">
-                            ${vip.assigned}
+                        <td style="padding: 6px; border: 1px solid #666666; color: ${vip.assigned === 'UNASSIGNED' ? '#cc0000' : '#0044cc'}; font-weight: bold; font-size: 11px;">
+                            ${vip.assigned === 'UNASSIGNED' ? 'NONE' : (vip.assignedUsername || vip.assigned.split('@')[0] || vip.assigned)}
                         </td>
                     </tr>
                 `).join('')}
@@ -580,33 +594,80 @@ class EmailDispatcher {
             </div>
             ` : ''}
             
-            ${sections.quick_wins && sections.quick_wins.length > 0 ? `
+            ${sections.quick_wins ? (sections.quick_wins.length > 0 ? `
             <div class="section" id="quickwins">
-                <h2><span class="emoji">🎯</span>Quick Wins - Easy Resolutions (~${sections.quick_wins.reduce((sum, qw) => sum + (qw.estimatedMinutes || 20), 0)} min total)</h2>
-                <ul>
-                ${sections.quick_wins.map(qw => `
-                    <li>
-                        <a href="${qw.url}" class="ticket-link">#${qw.ticketId}</a> - 
-                        ${qw.reason} (~${qw.estimatedMinutes || 20} min)
-                    </li>
+                <h2><span class="emoji">🎯</span>Quick Wins - Easy Resolutions</h2>
+                <table width="100%" cellpadding="0" cellspacing="0" style="border: 2px solid #008800; margin-top: 15px;">
+                    <tr>
+                        <th style="background-color: #008800; color: #ffffff; padding: 8px; text-align: left; border: 1px solid #000000; font-weight: bold;">Ticket</th>
+                        <th style="background-color: #008800; color: #ffffff; padding: 8px; text-align: left; border: 1px solid #000000; font-weight: bold;">Category</th>
+                        <th style="background-color: #008800; color: #ffffff; padding: 8px; text-align: left; border: 1px solid #000000; font-weight: bold;">Issue Analysis</th>
+                        <th style="background-color: #008800; color: #ffffff; padding: 8px; text-align: left; border: 1px solid #000000; font-weight: bold;">Quick Action</th>
+                    </tr>
+                ${sections.quick_wins.map((qw, index) => `
+                    <tr style="background-color: ${index % 2 === 0 ? '#ffffff' : '#f0fff0'};">
+                        <td style="padding: 8px; border: 1px solid #666666; border-bottom: 1px solid #cccccc;">
+                            <a href="${qw.url}" style="color: #008800; font-weight: bold; text-decoration: underline;">#${qw.ticketId}</a>
+                        </td>
+                        <td style="padding: 8px; border: 1px solid #666666; border-bottom: 1px solid #cccccc; font-weight: bold; color: #008800;">
+                            ${qw.category || 'Quick Win'}
+                        </td>
+                        <td style="padding: 8px; border: 1px solid #666666; border-bottom: 1px solid #cccccc; font-size: 12px;">
+                            ${qw.aiAnalysis || qw.issue || 'Quick resolution needed'}
+                        </td>
+                        <td style="padding: 8px; border: 1px solid #666666; border-bottom: 1px solid #cccccc; font-size: 12px;">
+                            ${qw.quickAction || qw.solution || 'Standard resolution'}
+                        </td>
+                    </tr>
                 `).join('')}
-                </ul>
+                </table>
+                <p style="margin: 10px 0 0 0; text-align: right;"><a href="#top" style="color: #0044cc; font-size: 12px;">↑ Back to Top</a></p>
             </div>
-            ` : ''}
+            ` : `
+            <div class="section" id="quickwins">
+                <h2><span class="emoji">🎯</span>Quick Wins - AI Analysis Required</h2>
+                <p style="padding: 20px; background-color: #fffbf0; border: 1px solid #ff9900; color: #333333;">
+                    ⚠️ <strong>AI-powered ticket analysis is not configured.</strong><br><br>
+                    To enable intelligent Quick Wins analysis that provides specific issue descriptions and resolution steps:<br><br>
+                    1. Set <code>CLAUDE_API_KEY</code> in Azure Function app settings<br>
+                    2. AI will then analyze ticket content and provide specific recommendations<br>
+                    3. Without AI, this section cannot generate meaningful insights
+                </p>
+            </div>
+            `) : ''}
             
             ${sections.closure_candidates && sections.closure_candidates.length > 0 ? `
             <div class="section" id="closure">
                 <h2><span class="emoji">📋</span>Closure Candidates - Ready to Close</h2>
-                <ul>
-                ${sections.closure_candidates.map(candidate => `
-                    <li>
-                        <a href="${candidate.url}" class="ticket-link">#${candidate.ticketId}</a> - 
-                        ${candidate.reason}
-                        <br><small><strong>Last Activity:</strong> ${candidate.lastActivity}</small>
-                        <br><small><strong>Assigned:</strong> <span class="tech-name">${candidate.assigned}</span></small>
-                    </li>
+                <table width="100%" cellpadding="0" cellspacing="0" style="border: 2px solid #0044cc; margin-top: 15px;">
+                    <tr>
+                        <th style="background-color: #0044cc; color: #ffffff; padding: 8px; text-align: left; border: 1px solid #000000; font-weight: bold;">Ticket</th>
+                        <th style="background-color: #0044cc; color: #ffffff; padding: 8px; text-align: left; border: 1px solid #000000; font-weight: bold;">Subject</th>
+                        <th style="background-color: #0044cc; color: #ffffff; padding: 8px; text-align: left; border: 1px solid #000000; font-weight: bold;">Reason for Closure</th>
+                        <th style="background-color: #0044cc; color: #ffffff; padding: 8px; text-align: left; border: 1px solid #000000; font-weight: bold;">Assigned Tech</th>
+                        <th style="background-color: #0044cc; color: #ffffff; padding: 8px; text-align: center; border: 1px solid #000000; font-weight: bold;">Last Activity</th>
+                    </tr>
+                ${sections.closure_candidates.map((candidate, index) => `
+                    <tr style="background-color: ${index % 2 === 0 ? '#ffffff' : '#f0f0ff'};">
+                        <td style="padding: 8px; border: 1px solid #666666; border-bottom: 1px solid #cccccc;">
+                            <a href="${candidate.url}" style="color: #0044cc; font-weight: bold; text-decoration: underline;">#${candidate.ticketId}</a>
+                        </td>
+                        <td style="padding: 8px; border: 1px solid #666666; border-bottom: 1px solid #cccccc; font-size: 12px;">
+                            ${candidate.subject || 'N/A'}
+                        </td>
+                        <td style="padding: 8px; border: 1px solid #666666; border-bottom: 1px solid #cccccc; font-size: 12px;">
+                            ${candidate.reason}
+                        </td>
+                        <td style="padding: 8px; border: 1px solid #666666; border-bottom: 1px solid #cccccc; color: #0044cc; font-weight: bold;">
+                            ${candidate.assigned}
+                        </td>
+                        <td style="padding: 8px; text-align: center; border: 1px solid #666666; border-bottom: 1px solid #cccccc;">
+                            ${candidate.lastActivity}
+                        </td>
+                    </tr>
                 `).join('')}
-                </ul>
+                </table>
+                <p style="margin: 10px 0 0 0; text-align: right;"><a href="#top" style="color: #0044cc; font-size: 12px;">↑ Back to Top</a></p>
             </div>
             ` : ''}
             

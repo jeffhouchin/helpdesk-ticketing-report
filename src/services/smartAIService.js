@@ -260,6 +260,20 @@ JSON response:
     return Math.floor((now - created) / (1000 * 60 * 60 * 24));
   }
 
+  // Direct call to cheap model with custom prompt
+  async analyzeWithCheapModel(prompt, maxTokens = 1000) {
+    console.log('🏃‍♂️ Using fast model for custom analysis...');
+    this.usage.cheapCalls++;
+    
+    try {
+      const response = await this.callClaude(this.models.cheap, prompt, maxTokens, 0.1);
+      return response.content[0].text;
+    } catch (error) {
+      console.error('Cheap model analysis failed:', error);
+      throw error;
+    }
+  }
+
   // Usage reporting for cost monitoring
   getUsageReport() {
     return {

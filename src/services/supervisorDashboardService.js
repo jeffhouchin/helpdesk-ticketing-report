@@ -36,7 +36,7 @@ class SupervisorDashboardService {
     
     openTickets.forEach(ticket => {
       const slaAnalysis = this.slaPolicy.analyzeSLA(ticket);
-      const techEmail = ticket.Tech_Assigned_Clean ? this.getTechEmail(ticket.Tech_Assigned_Clean) : 'UNASSIGNED';
+      const techEmail = ticket.Tech_Email || 'UNASSIGNED';
       
       // Assignment SLA violations
       if (slaAnalysis.assignment.status === 'VIOLATED') {
@@ -48,6 +48,7 @@ class SupervisorDashboardService {
           hoursOverdue: slaAnalysis.assignment.hoursOverdue,
           action: 'ASSIGN_IMMEDIATELY',
           assigned: techEmail,
+          assignedUsername: ticket.Tech_Username || '',
           subject: (ticket.Subject || '').substring(0, 60),
           url: `http://helpdesk/Ticket/${ticket.IssueID}`
         });
@@ -55,14 +56,19 @@ class SupervisorDashboardService {
       
       // First response SLA violations  
       if (slaAnalysis.firstResponse.status === 'VIOLATED') {
+        // Check if there's already been a response by looking for "No response" in message
+        const noResponseYet = slaAnalysis.firstResponse.message && 
+                             slaAnalysis.firstResponse.message.includes('No response');
+        
         violations.push({
           ticketId: ticket.IssueID,
           type: 'FIRST_RESPONSE',
           severity: slaAnalysis.firstResponse.hoursOverdue > 24 ? 'CRITICAL' : 'HIGH',
           message: slaAnalysis.firstResponse.message,
           hoursOverdue: slaAnalysis.firstResponse.hoursOverdue,
-          action: 'RESPOND_NOW',
+          action: noResponseYet ? 'INITIAL_RESPONSE_REQUIRED' : 'REVIEW_SLA_COMPLIANCE',
           assigned: techEmail,
+          assignedUsername: ticket.Tech_Username || '',
           subject: (ticket.Subject || '').substring(0, 60),
           url: `http://helpdesk/Ticket/${ticket.IssueID}`
         });
@@ -79,8 +85,7 @@ class SupervisorDashboardService {
     
     // Use the existing no-response alerts (already 3+ days with no tech response)
     ticketData.noResponseAlerts.forEach(alert => {
-      const techEmail = alert.ticket.Tech_Assigned_Clean ? 
-        this.getTechEmail(alert.ticket.Tech_Assigned_Clean) : 'UNASSIGNED';
+      const techEmail = alert.ticket.Tech_Email || 'UNASSIGNED';
       
       noResponseTickets.push({
         ticketId: alert.ticket.IssueID,
@@ -88,8 +93,9 @@ class SupervisorDashboardService {
         daysSinceLastTechResponse: alert.lastTechResponse ? 
           this.calculateAge(alert.lastTechResponse.date) : alert.daysSinceCreated,
         assigned: techEmail,
+        assignedUsername: alert.ticket.Tech_Username || '',
         subject: (alert.ticket.Subject || '').substring(0, 70),
-        priority: this.getPriorityLevel(alert.ticket.Priority),
+        status: alert.ticket.Current_Status || 'New',
         urgencyLevel: alert.urgencyLevel,
         url: `http://helpdesk/Ticket/${alert.ticket.IssueID}`
       });
@@ -165,17 +171,20 @@ class SupervisorDashboardService {
       let matchedTerm = null;
       
       for (const vipTerm of this.vipUsers) {
-        if (submitter.includes(vipTerm)) {
+        // Create regex with word boundaries to avoid false matches like 'hector' containing 'cto'
+        const vipRegex = new RegExp(`\\b${vipTerm}\\b`, 'i');
+        
+        if (vipRegex.test(submitter)) {
           vipReason = 'VIP Submitter';
           matchedTerm = vipTerm;
           break;
         }
-        if (subject.includes(vipTerm)) {
+        if (vipRegex.test(subject)) {
           vipReason = 'VIP in Subject';
           matchedTerm = vipTerm;
           break;
         }
-        if (body.includes(vipTerm)) {
+        if (vipRegex.test(body)) {
           vipReason = 'VIP Mentioned';
           matchedTerm = vipTerm;
           break;
@@ -184,15 +193,16 @@ class SupervisorDashboardService {
       
       if (vipReason) {
         const submitterEmail = this.getTechEmail(ticket.Submitted_By);
-        const assignedEmail = ticket.Tech_Assigned_Clean ? 
-          this.getTechEmail(ticket.Tech_Assigned_Clean) : 'UNASSIGNED';
+        const assignedEmail = ticket.Tech_Email || 'UNASSIGNED';
         
         vipTickets.push({
           ticketId: ticket.IssueID,
           submitter: submitterEmail,
+          submitterUsername: ticket.Submitted_By ? (ticket.Submitted_By.includes('\\') ? ticket.Submitted_By.split('\\')[1] : ticket.Submitted_By.split('@')[0]) : '',
           subject: (ticket.Subject || '').substring(0, 80),
           age: this.calculateAge(ticket.IssueDate),
           assigned: assignedEmail,
+          assignedUsername: ticket.Tech_Username || '',
           vipReason: vipReason,
           vipTerm: matchedTerm,
           url: `http://helpdesk/Ticket/${ticket.IssueID}`
@@ -204,41 +214,43 @@ class SupervisorDashboardService {
   }
 
   async findQuickWins(openTickets) {
-    const quickWinKeywords = [
-      'password', 'reset', 'unlock', 'keyboard', 'mouse', 'cable',
-      'printer', 'monitor', 'access', 'permission', 'login'
-    ];
+    // Send ALL tickets under 7 days old to AI for analysis
+    // Let AI determine what's a quick win, not static keywords
+    const recentTickets = openTickets.filter(ticket => {
+      const age = this.calculateAge(ticket.IssueDate);
+      return age <= 3; // Focus on tickets from last 3 days only
+    });
     
-    const quickWinCandidates = openTickets.filter(ticket => {
-      const subject = (ticket.Subject || '').toLowerCase();
-      const body = (ticket.Ticket_Body || '').toLowerCase();
-      const combinedText = subject + ' ' + body;
-      
-      // Track which keywords were matched
-      const matchedKeywords = quickWinKeywords.filter(keyword => 
-        combinedText.includes(keyword)
-      );
-      
-      if (matchedKeywords.length > 0) {
-        ticket._matchedKeywords = matchedKeywords; // Store for later use
-        return true;
-      }
-      return false;
-    }).slice(0, 20); // Limit for AI analysis
+    // Sort by age (newest first) and take top 30 for AI analysis
+    const quickWinCandidates = recentTickets
+      .sort((a, b) => new Date(b.IssueDate) - new Date(a.IssueDate))
+      .slice(0, 30); // Analyze more tickets
     
     if (quickWinCandidates.length === 0) return [];
     
     try {
       const prompt = this.buildQuickWinsPrompt(quickWinCandidates);
+      console.log('🤖 Calling AI for Quick Wins analysis...');
+      console.log('📝 Sending prompt to AI with', quickWinCandidates.length, 'candidates');
       const response = await this.aiService.analyzeWithCheapModel(prompt);
+      console.log('📦 AI Response received:', response ? 'Yes' : 'No');
       const parsed = this.parseQuickWinsResponse(response);
-      // Add matched keywords to each result
-      return parsed.map(item => ({
+      console.log('🔍 Parsed results:', parsed.length, 'tickets');
+      
+      // Add URL to each result
+      const resultsWithUrls = parsed.map(item => ({
         ...item,
-        matchedKeywords: quickWinCandidates.find(t => t.IssueID === item.ticketId)?._matchedKeywords || []
+        url: `http://helpdesk/Ticket/${item.ticketId}`
       }));
+      
+      console.log(`✅ AI analyzed ${resultsWithUrls.length} quick win tickets`);
+      return resultsWithUrls;
     } catch (error) {
-      console.log('Quick wins analysis failed, using keyword fallback');
+      console.error('❌ AI analysis failed with error:', error);
+      console.error('Error details:', error.message, error.response?.data || '');
+      console.log('⚠️ Falling back to keyword-based analysis due to AI error');
+      
+      // Return keyword-based quick wins as fallback
       return this.createKeywordQuickWins(quickWinCandidates);
     }
   }
@@ -259,8 +271,7 @@ class SupervisorDashboardService {
         comments.includes('awaiting response') ||
         comments.includes('please confirm')
       )) {
-        const techEmail = ticket.Tech_Assigned_Clean ? 
-          this.getTechEmail(ticket.Tech_Assigned_Clean) : 'UNASSIGNED';
+        const techEmail = ticket.Tech_Email || 'UNASSIGNED';
         
         candidates.push({
           ticketId: ticket.IssueID,
@@ -280,15 +291,14 @@ class SupervisorDashboardService {
     const techStats = {};
     
     openTickets.forEach(ticket => {
-      const tech = ticket.Tech_Assigned_Clean;
-      if (!tech || tech.trim() === '') return;
+      const techEmail = ticket.Tech_Email;
+      if (!techEmail || techEmail.trim() === '') return;
       
-      // Convert tech name to email format for display
-      const techEmail = this.getTechEmail(tech);
+      // Use email directly for display
       
       if (!techStats[techEmail]) {
         techStats[techEmail] = {
-          originalName: tech,
+          originalName: ticket.Tech_Assigned_Clean || techEmail,
           totalTickets: 0,
           oldTickets: 0,
           avgAge: 0,
@@ -577,12 +587,50 @@ Remember: You're helping a supervisor manage people and processes, not just repo
       age: this.calculateAge(ticket.IssueDate)
     }));
 
-    return `Analyze these helpdesk tickets and identify which ones are likely quick wins (can be resolved in <30 minutes):
+    return `You are an experienced IT helpdesk supervisor analyzing tickets to identify quick wins (resolvable in under 30 minutes).
+Evaluate which tickets can be resolved quickly and provide secure, best-practice solutions.
 
+TICKETS TO ANALYZE:
 ${JSON.stringify(ticketSamples, null, 2)}
 
-Return JSON array of quick win ticket IDs with reasons:
-[{"ticketId": "123", "reason": "Simple password reset", "estimatedMinutes": 15}]`;
+Return a JSON array with ONLY tickets that can be resolved in under 30 minutes:
+[{
+  "ticketId": "123",
+  "aiAnalysis": "Specific 5-10 word description of the actual problem",
+  "quickAction": "Exact secure action tech should take",
+  "category": "Access|Hardware|Software|Network|Email|Performance",
+  "estimatedMinutes": 5
+}]
+
+CRITICAL SECURITY & BEST PRACTICE RULES:
+- NEVER grant admin rights for software installations - use deployment tools or IT-managed installation
+- For audio issues: First check audio settings, drivers, and device manager BEFORE suggesting hardware
+- For access requests: Verify manager approval first, then grant MINIMAL required permissions only
+- For software issues: Try repair/reinstall/profile rebuild BEFORE suggesting new licenses or purchases  
+- For hardware issues: Always attempt troubleshooting (drivers, connections, settings) before replacement
+- For OneNote/Office updates: Use deployment tools or SCCM, never local admin rights
+- For KIPU/application access: Verify with manager, then request through proper channels (not direct DB access)
+- For profile issues: Try profile repair/reset before recreation
+
+QUICK WIN CRITERIA:
+- Password resets (verify identity first)
+- Printer queue clears and driver reinstalls  
+- Outlook profile rebuilds
+- Mapped drive reconnections
+- Simple software reinstalls via deployment tools
+- Audio/display troubleshooting (settings and drivers)
+- Browser cache/cookie clears
+- VPN client resets
+
+EXCLUDE these (not quick wins):
+- New hardware purchases
+- Complex permission changes  
+- Tickets requiring manager approval
+- License purchases
+- Database access changes
+- Anything requiring admin rights to user
+
+Be specific but security-conscious in your recommendations.`;
   }
 
   parseQuickWinsResponse(response) {
@@ -595,12 +643,119 @@ Return JSON array of quick win ticket IDs with reasons:
   }
 
   createKeywordQuickWins(candidates) {
-    return candidates.slice(0, 5).map(ticket => ({
-      ticketId: ticket.IssueID,
-      reason: 'Contains quick-win keywords',
-      estimatedMinutes: 20,
-      url: `http://helpdesk/Ticket/${ticket.IssueID}`
-    }));
+    // Simple fallback when AI is unavailable
+    return candidates.slice(0, 5).map(ticket => {
+      const subject = (ticket.Subject || '').toLowerCase();
+      const body = (ticket.Ticket_Body || '').substring(0, 100).toLowerCase();
+      
+      // More specific AI-like analysis based on keywords and content
+      let aiAnalysis = 'Quick resolution ticket needs review';
+      let quickAction = 'Review ticket and assign to appropriate tech';
+      let category = 'General';
+      
+      // Try to extract better analysis from subject line
+      if (!subject && !body) {
+        aiAnalysis = 'Empty ticket needs investigation';
+        quickAction = 'Contact user for more details';
+      } else if (subject.length > 0) {
+        // Use first 40 chars of subject as analysis if nothing else matches
+        aiAnalysis = subject.substring(0, 40);
+        quickAction = 'Analyze issue and provide solution';
+      }
+      
+      // More specific password analysis with security best practices
+      if (subject.includes('password') || body.includes('password')) {
+        if (subject.includes('reset') || body.includes('reset')) {
+          aiAnalysis = 'User requesting password reset for account';
+          quickAction = 'Verify identity, reset in AD, force change on next login';
+        } else if (subject.includes('expired') || body.includes('expired')) {
+          aiAnalysis = 'Password expired and needs renewal';
+          quickAction = 'Reset password, verify expiration policy is appropriate';
+        } else {
+          aiAnalysis = 'Password issue preventing system access';
+          quickAction = 'Check AD account status and reset if needed';
+        }
+        category = 'Access';
+      } else if (subject.includes('unlock') || body.includes('locked out')) {
+        aiAnalysis = 'User account locked after failed login attempts';
+        quickAction = 'Unlock account in AD and verify user identity';
+        category = 'Access';
+      } else if (subject.includes('printer') || body.includes('printer')) {
+        if (body.includes('jam') || subject.includes('jam')) {
+          aiAnalysis = 'Printer has paper jam needs clearing';
+          quickAction = 'Clear jam and test print functionality';
+        } else if (body.includes('offline') || subject.includes('offline')) {
+          aiAnalysis = 'Printer showing offline on user workstation';
+          quickAction = 'Restart spooler service and check network connection';
+        } else {
+          aiAnalysis = 'Printer not functioning properly for user';
+          quickAction = 'Check driver installation and spooler service';
+        }
+        category = 'Hardware';
+      } else if (subject.includes('access') || body.includes('permission')) {
+        if (body.includes('share') || body.includes('folder')) {
+          aiAnalysis = 'User needs access to network shared folder';
+          quickAction = 'Verify manager approval, add to appropriate security group';
+        } else if (body.includes('application') || body.includes('software')) {
+          aiAnalysis = 'User needs access to specific application';
+          quickAction = 'Check approval, grant minimal required permissions only';
+        } else {
+          aiAnalysis = 'User requesting additional system permissions';
+          quickAction = 'Review request and grant appropriate access level';
+        }
+        category = 'Access';
+      } else if (subject.includes('keyboard') || subject.includes('mouse')) {
+        aiAnalysis = 'Input device not working at workstation';
+        quickAction = 'Test USB ports and replace device if faulty';
+        category = 'Hardware';
+      } else if (subject.includes('monitor') || subject.includes('screen')) {
+        if (body.includes('black') || body.includes('blank')) {
+          aiAnalysis = 'Monitor displaying black or blank screen';
+          quickAction = 'Check cables, test with different port, update drivers';
+        } else {
+          aiAnalysis = 'Display issue affecting user productivity';
+          quickAction = 'Check display settings, resolution, and driver updates';
+        }
+        category = 'Hardware';
+      } else if (subject.includes('email') || body.includes('outlook')) {
+        aiAnalysis = 'Email client issue preventing message access';
+        quickAction = 'Rebuild Outlook profile and clear cache';
+        category = 'Software';
+      } else if (subject.includes('slow') || body.includes('performance')) {
+        aiAnalysis = 'Computer running slowly affecting productivity';
+        quickAction = 'Check disk space and running processes';
+        category = 'Performance';
+      } else if (subject.includes('vpn')) {
+        aiAnalysis = 'VPN connection issue preventing remote work';
+        quickAction = 'Reset VPN client and check credentials';
+        category = 'Network';
+      } else if (subject.includes('install') || body.includes('install')) {
+        aiAnalysis = 'Software installation request from user';
+        quickAction = 'Deploy via SCCM/deployment tools, never grant admin';
+        category = 'Software';
+      } else if (subject.includes('update') || body.includes('update')) {
+        aiAnalysis = 'Software update needed on workstation';
+        quickAction = 'Push updates via deployment tools or WSUS';
+        category = 'Software';
+      } else if (subject.includes('reboot') || subject.includes('restart')) {
+        aiAnalysis = 'System requires reboot to resolve issue';
+        quickAction = 'Schedule reboot with user and verify fix';
+        category = 'Maintenance';
+      } else if (subject.includes('mapped') || subject.includes('drive')) {
+        aiAnalysis = 'Network drive mapping issue for user';
+        quickAction = 'Remap drive letter and verify permissions';
+        category = 'Network';
+      }
+      
+      return {
+        ticketId: ticket.IssueID,
+        aiAnalysis: aiAnalysis,
+        quickAction: quickAction,
+        category: category,
+        matchedKeywords: ticket._matchedKeywords || [],
+        url: `http://helpdesk/Ticket/${ticket.IssueID}`
+      };
+    });
   }
 
   formatNewSupervisorReport(analysis, ticketData) {

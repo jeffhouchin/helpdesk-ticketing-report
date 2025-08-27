@@ -48,33 +48,35 @@ class TicketSLAPolicy {
     
     let totalHours = 0;
     let currentDate = new Date(estStart);
+    currentDate.setHours(0, 0, 0, 0); // Start at beginning of day
     
-    while (currentDate < estEnd) {
+    while (currentDate <= estEnd) {
       const dayOfWeek = currentDate.getDay(); // 0 = Sunday, 6 = Saturday
       const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
       const hours = isWeekend ? this.businessHours.weekend : this.businessHours.weekday;
       
+      // Create business hours for this day
       const dayStart = new Date(currentDate);
       dayStart.setHours(Math.floor(hours.start), (hours.start % 1) * 60, 0, 0);
       
       const dayEnd = new Date(currentDate);
       dayEnd.setHours(Math.floor(hours.end), (hours.end % 1) * 60, 0, 0);
       
-      // If both times are within this day's business hours
-      if (estStart <= dayEnd && estEnd >= dayStart) {
-        const effectiveStart = estStart > dayStart ? estStart : dayStart;
-        const effectiveEnd = estEnd < dayEnd ? estEnd : dayEnd;
-        
-        if (effectiveStart < effectiveEnd) {
-          totalHours += (effectiveEnd - effectiveStart) / (1000 * 60 * 60);
-        }
+      // Calculate overlap between business hours and our time range
+      const rangeStart = estStart > dayStart ? estStart : dayStart;
+      const rangeEnd = estEnd < dayEnd ? estEnd : dayEnd;
+      
+      // If there's an overlap, add those hours
+      if (rangeStart < rangeEnd) {
+        const hoursThisDay = (rangeEnd - rangeStart) / (1000 * 60 * 60);
+        totalHours += hoursThisDay;
       }
       
       // Move to next day
       currentDate.setDate(currentDate.getDate() + 1);
-      currentDate.setHours(0, 0, 0, 0);
     }
     
+    // Return actual business hours without artificial cap
     return totalHours;
   }
 
@@ -185,7 +187,7 @@ class TicketSLAPolicy {
    */
   analyzeSLA(ticket) {
     const createdDate = new Date(ticket.IssueDate);
-    const assignedDate = ticket.Tech_Assigned_Clean ? this.estimateAssignmentDate(ticket) : null;
+    const assignedDate = (ticket.Tech_Assigned_Clean || ticket.Tech_Email) ? this.estimateAssignmentDate(ticket) : null;
     const firstResponseDate = this.getFirstTechResponseDate(ticket);
     const { lastUserResponse, lastTechResponse, hasUserResponseAfterTech } = this.parseResponseHistory(ticket);
     
@@ -204,8 +206,33 @@ class TicketSLAPolicy {
    * Estimate assignment date from comments (fallback logic)
    */
   estimateAssignmentDate(ticket) {
-    // This would need to parse comments to find when assignment happened
-    // For now, return null to indicate we need assignment tracking
+    // Parse comments to find when assignment happened
+    if (!ticket.comments) return null;
+    
+    // Look for assignment patterns in comments
+    // Pattern: "MM/DD/YYYY HH:MM : ... : The ticket has been assigned to technician: [name]"
+    const assignmentPattern = /(\d{2}\/\d{2}\/\d{4}\s+\d{1,2}:\d{2})\s*:.*?(?:ticket has been assigned to|assigned to technician|assigned:|reassigned to)/i;
+    
+    const match = ticket.comments.match(assignmentPattern);
+    if (match) {
+      try {
+        const assignedDate = new Date(match[1]);
+        if (!isNaN(assignedDate.getTime())) {
+          return assignedDate;
+        }
+      } catch (error) {
+        console.log(`Failed to parse assignment date from: ${match[1]}`);
+      }
+    }
+    
+    // If we have a tech assigned but can't find assignment date in comments,
+    // assume it was assigned shortly after creation (within 1 hour for SLA purposes)
+    if (ticket.Tech_Assigned_Clean || ticket.Tech_Email) {
+      const createdDate = new Date(ticket.IssueDate);
+      const estimatedAssignmentDate = new Date(createdDate.getTime() + (30 * 60 * 1000)); // 30 minutes after creation
+      return estimatedAssignmentDate;
+    }
+    
     return null;
   }
 
@@ -215,24 +242,31 @@ class TicketSLAPolicy {
   getFirstTechResponseDate(ticket) {
     if (!ticket.comments) return null;
     
-    const techPatterns = [
-      /(\d{2}\/\d{2}\/\d{4}\s+\d{1,2}:\d{2})\s*:\s*(?:BHOPB\\|bhopb\\)/i,
-      /(\d{2}\/\d{2}\/\d{4}\s+\d{1,2}:\d{2})\s*:\s*[^:]*(?:resolved|completed|fixed|working|investigating)/i
-    ];
+    // Look for all technician responses (BHOPB\username or bhopb\username patterns)
+    // Updated pattern to match all occurrences with global flag
+    const techResponsePattern = /(\d{2}\/\d{2}\/\d{4}\s+\d{1,2}:\d{2})\s*:\s*(?:BHOPB\\[^:]+|bhopb\\[^:]+)\s*:\s*Technician/gi;
     
     let earliestResponse = null;
+    let match;
     
-    for (const pattern of techPatterns) {
-      const matches = ticket.comments.match(pattern);
-      if (matches) {
-        try {
-          const responseDate = new Date(matches[1]);
-          if (!isNaN(responseDate.getTime()) && (!earliestResponse || responseDate < earliestResponse)) {
+    // Find all matches and get the earliest one
+    while ((match = techResponsePattern.exec(ticket.comments)) !== null) {
+      try {
+        const responseDate = new Date(match[1]);
+        if (!isNaN(responseDate.getTime())) {
+          // Skip if this is just an assignment message
+          const contextAfterDate = ticket.comments.substring(match.index, match.index + 200);
+          if (contextAfterDate.includes('ticket has been assigned') || 
+              contextAfterDate.includes('assigned to technician')) {
+            continue; // Skip assignment messages
+          }
+          
+          if (!earliestResponse || responseDate < earliestResponse) {
             earliestResponse = responseDate;
           }
-        } catch (error) {
-          continue;
         }
+      } catch (error) {
+        continue;
       }
     }
     

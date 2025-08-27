@@ -67,8 +67,11 @@ class DataProcessor {
       cleaned[cleanKey] = value;
     });
 
-    // Add cleaned technician field
-    cleaned.Tech_Assigned_Clean = this.cleanTechnicianName(cleaned.Tech_Assigned);
+    // Add cleaned technician fields with username and email
+    const techInfo = this.cleanTechnicianName(cleaned.Tech_Assigned);
+    cleaned.Tech_Assigned_Clean = techInfo.clean;
+    cleaned.Tech_Username = techInfo.username;
+    cleaned.Tech_Email = techInfo.email;
     
     // Debug logging for Azure
     if (process.env.AZURE_FUNCTIONS_ENVIRONMENT) {
@@ -79,13 +82,42 @@ class DataProcessor {
   }
 
   cleanTechnicianName(techName) {
-    if (!techName || typeof techName !== 'string') return '';
+    if (!techName || typeof techName !== 'string') {
+      return { 
+        clean: '', 
+        username: '', 
+        email: '' 
+      };
+    }
     
-    return techName
-      .trim()
-      .replace(/[^\w\s@.-]/g, '') // Remove special chars except common ones
-      .replace(/\s+/g, ' ') // Normalize spaces
-      .substring(0, 50); // Limit length
+    // Extract username from domain\username format
+    let username = '';
+    let cleanName = techName.trim();
+    
+    if (techName.includes('\\')) {
+      // Format: BHOPB\username or bhopb\username
+      const parts = techName.split('\\');
+      username = parts[parts.length - 1].toLowerCase();
+      cleanName = username; // Use just the username as the clean name
+    } else if (techName.toLowerCase().startsWith('bhopb')) {
+      // Format: BHOPBusername or bhopbusername (already processed, backslash was removed)
+      // Extract username by removing the BHOPB prefix
+      username = techName.substring(5).toLowerCase();
+      cleanName = username;
+    } else {
+      // Unknown format, use as-is
+      username = techName.toLowerCase().replace(/[^\w.-]/g, '');
+      cleanName = techName;
+    }
+    
+    // Create email address
+    const email = username ? `${username}@banyancenters.com` : '';
+    
+    return {
+      clean: cleanName.substring(0, 50),
+      username: username.substring(0, 50),
+      email: email
+    };
   }
 
   isTicketOpen(ticket) {
