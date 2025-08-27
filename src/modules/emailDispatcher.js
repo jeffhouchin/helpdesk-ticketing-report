@@ -521,16 +521,40 @@ class EmailDispatcher {
             ${sections.vip_alerts && sections.vip_alerts.length > 0 ? `
             <div class="section">
                 <h2><span class="emoji">👑</span>VIP Alerts - Executive/Director Tickets</h2>
-                <ul>
-                ${sections.vip_alerts.map(vip => `
-                    <li>
-                        <a href="${vip.url}" class="ticket-link">#${vip.ticketId}</a> - 
-                        <strong>${vip.submitter}</strong> (${vip.age} days)
-                        <br><small><strong>Subject:</strong> ${vip.subject}</small>
-                        <br><small><strong>Assigned:</strong> <span class="tech-name">${vip.assigned}</span></small>
-                    </li>
+                <table width="100%" cellpadding="0" cellspacing="0" style="border: 2px solid #cc0000; margin-top: 15px;">
+                    <tr>
+                        <th style="background-color: #cc0000; color: #ffffff; padding: 8px; text-align: left; border: 1px solid #000000;">Ticket</th>
+                        <th style="background-color: #cc0000; color: #ffffff; padding: 8px; text-align: left; border: 1px solid #000000;">VIP Indicator</th>
+                        <th style="background-color: #cc0000; color: #ffffff; padding: 8px; text-align: left; border: 1px solid #000000;">Submitter</th>
+                        <th style="background-color: #cc0000; color: #ffffff; padding: 8px; text-align: left; border: 1px solid #000000;">Subject</th>
+                        <th style="background-color: #cc0000; color: #ffffff; padding: 8px; text-align: center; border: 1px solid #000000;">Age</th>
+                        <th style="background-color: #cc0000; color: #ffffff; padding: 8px; text-align: left; border: 1px solid #000000;">Assigned To</th>
+                    </tr>
+                ${sections.vip_alerts.map((vip, index) => `
+                    <tr style="background-color: ${index % 2 === 0 ? '#ffcccc' : '#ffe6e6'};">
+                        <td style="padding: 8px; border: 1px solid #666666;">
+                            <a href="${vip.url}" style="color: #cc0000; font-weight: bold; text-decoration: underline;">#${vip.ticketId}</a>
+                        </td>
+                        <td style="padding: 8px; border: 1px solid #666666; font-weight: bold; color: #cc0000;">
+                            ${vip.vipReason || 'VIP'}<br>
+                            <span style="font-size: 11px; font-weight: normal; color: #666666;">(${vip.vipTerm || 'executive'})</span>
+                        </td>
+                        <td style="padding: 8px; border: 1px solid #666666; color: #000000;">
+                            <strong>${vip.submitter}</strong>
+                        </td>
+                        <td style="padding: 8px; border: 1px solid #666666; color: #000000; font-size: 12px;">
+                            ${vip.subject}
+                        </td>
+                        <td style="padding: 8px; text-align: center; border: 1px solid #666666; color: ${vip.age > 3 ? '#cc0000' : '#000000'}; font-weight: bold;">
+                            ${vip.age} days
+                        </td>
+                        <td style="padding: 8px; border: 1px solid #666666; color: ${vip.assigned === 'UNASSIGNED' ? '#cc0000' : '#0044cc'}; font-weight: bold;">
+                            ${vip.assigned}
+                        </td>
+                    </tr>
                 `).join('')}
-                </ul>
+                </table>
+                <p style="margin-top: 10px; font-size: 12px; color: #cc0000; font-weight: bold;">⚠️ VIP Detection: Matches keywords (director, vp, president, ceo, cfo, cto, executive) in submitter name, subject, or ticket body</p>
             </div>
             ` : ''}
             

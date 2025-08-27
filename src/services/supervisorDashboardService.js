@@ -152,20 +152,37 @@ class SupervisorDashboardService {
       const subject = (ticket.Subject || '').toLowerCase();
       const body = (ticket.Ticket_Body || '').toLowerCase();
       
-      // Check if submitter or content contains VIP indicators
-      const isVIP = this.vipUsers.some(vipTerm => 
-        submitter.includes(vipTerm) || 
-        subject.includes(vipTerm) || 
-        body.includes(vipTerm)
-      );
+      // Check if submitter or content contains VIP indicators and track reason
+      let vipReason = null;
+      let matchedTerm = null;
       
-      if (isVIP) {
+      for (const vipTerm of this.vipUsers) {
+        if (submitter.includes(vipTerm)) {
+          vipReason = 'VIP Submitter';
+          matchedTerm = vipTerm;
+          break;
+        }
+        if (subject.includes(vipTerm)) {
+          vipReason = 'VIP in Subject';
+          matchedTerm = vipTerm;
+          break;
+        }
+        if (body.includes(vipTerm)) {
+          vipReason = 'VIP Mentioned';
+          matchedTerm = vipTerm;
+          break;
+        }
+      }
+      
+      if (vipReason) {
         vipTickets.push({
           ticketId: ticket.IssueID,
           submitter: ticket.Submitted_By,
           subject: (ticket.Subject || '').substring(0, 80),
           age: this.calculateAge(ticket.IssueDate),
           assigned: ticket.Tech_Assigned_Clean || 'UNASSIGNED',
+          vipReason: vipReason,
+          vipTerm: matchedTerm,
           url: `http://helpdesk/Ticket/${ticket.IssueID}`
         });
       }
